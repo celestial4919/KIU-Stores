@@ -1,6 +1,11 @@
 
-gunicorn
+Pillow
+PyJWT
+cloudinary
 dj-database-url
+django-allauth
+django-cloudinary-storage
+gunicorn
 psycopg2-binary
-whitenoise
 python-dotenv
+whitenoise
