@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width: 900px; margin: 20px auto; padding: 20px;">
+    <h2 style="color: #001f3f; margin-bottom: 20px;">Your Shopping Cart</h2>
+
+    {% if cart_items %}
+        <div style="display: grid; gap: 20px;">
+            {% for item in cart_items %}
+                <div style="display: flex; align-items: center; background: white; padding: 15px; border-radius: 12px; border: 1px solid #eee; gap: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
+                    <!-- Product Image -->
+                    <img src="{{ item.product.image.url }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+                    
+                    <!-- Product Info -->
+                    <div style="flex-grow: 1;">
+                        <h4 style="margin: 0; color: #333;">{{ item.product.title }}</h4>
+                        <p style="font-size: 0.8rem; color: #777;">Vendor: {{ item.product.vendor.store_name|default:item.product.vendor.username }}</p>
+                        <p style="font-weight: 700; color: #001f3f; margin-top: 5px;">USh {{ item.product.price }}</p>
+                    </div>
+
+                    <!-- Vendor Contact & Location -->
+                    <div style="text-align: right;">
+                        <a href="https://wa.me/{{ item.product.vendor.phone_number }}" target="_blank" style="color: #27ae60; text-decoration: none; font-size: 0.85rem; display: block; margin-bottom: 5px;">
+                            <i class="fa-brands fa-whatsapp"></i> Chat with Seller
+                        </a>
+                        <small style="color: #999; display: block;">
+                            <i class="fa-solid fa-location-dot"></i> {{ item.product.vendor.location|default:"Kampala Campus" }}
+                        </small>
+                    </div>
+
+                    <!-- Remove Button -->
+                    <a href="{% url 'remove_from_cart' item.id %}" style="color: #e74c3c; padding: 10px;"><i class="fa-solid fa-trash"></i></a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- TOTAL SECTION -->
+        <div style="margin-top: 30px; background: #001f3f; color: white; padding: 25px; border-radius: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p style="margin: 0; font-size: 0.9rem; opacity: 0.8;">Total Amount</p>
+                <h2 style="margin: 0;">USh {{ total }}</h2>
+            </div>
+            <button style="background: #27ae60; color: white; border: none; padding: 15px 40px; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 1rem;">
+                Proceed to Escrow
+            </button>
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 50px;">
+            <i class="fa-solid fa-cart-ghost fa-4x" style="color: #eee; margin-bottom: 20px;"></i>
+            <p style="color: #777;">Your cart is empty. Time to go hunting!</p>
+            <a href="{% url 'home' %}" style="color: #001f3f; font-weight: 700; text-decoration: none;">Back to Marketplace</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div style="max-width: 1000px; margin: 0 auto; padding: 40px 20px; font-family: 'Poppins', sans-serif;">
+    
+    <!-- Hero Section -->
+    <div style="text-align: center; margin-bottom: 60px;">
+        <h1 style="font-size: 3rem; color: #001f3f; font-weight: 900; line-height: 1.1; margin-bottom: 20px;">
+            Grow Your Brand at <span style="color: #27ae60;">KIU</span>
+        </h1>
+        <p style="font-size: 1.2rem; color: #555; max-width: 700px; margin: 0 auto;">
+            Join the premier digital ecosystem for the Kampala International University community. 
+            From student side-hustles to established city brands.
+        </p>
+        <a href="#vendor-form" style="display: inline-block; margin-top: 30px; background: #001f3f; color: white; padding: 15px 40px; border-radius: 50px; text-decoration: none; font-weight: 700; box-shadow: 0 4px 15px rgba(0,31,63,0.2);">
+            Start Selling Today
+        </a>
+    </div>
+
+    <!-- The Two Tiers (Options 1 & 2) -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 80px;">
+        
+        <!-- Student Sellers -->
+        <div style="background: #fdfdfd; border: 1px solid #e8f5e9; padding: 30px; border-radius: 15px; border-top: 5px solid #27ae60;">
+            <div style="font-size: 2rem; margin-bottom: 15px;">🧑‍🎓</div>
+            <h3 style="color: #2e7d32; margin-bottom: 10px;">Student Sellers</h3>
+            <p style="color: #666; font-size: 0.9rem; line-height: 1.6;">
+                Turn your talent or thrift into a campus business. No physical shop needed. 
+                Get discovered by your classmates instantly.
+            </p>
+            <ul style="margin-top: 15px; list-style: none; padding: 0; font-size: 0.85rem; color: #444;">
+                <li><i class="fa-solid fa-check" style="color: #27ae60;"></i> Targeted Campus Reach</li>
+                <li><i class="fa-solid fa-check" style="color: #27ae60;"></i> Secure Escrow Payments</li>
+            </ul>
+        </div>
+
+        <!-- Official Businesses -->
+        <div style="background: #fdfdfd; border: 1px solid #fff8e1; padding: 30px; border-radius: 15px; border-top: 5px solid #ffc107;">
+            <div style="font-size: 2rem; margin-bottom: 15px;">🏢</div>
+            <h3 style="color: #b7791f; margin-bottom: 10px;">Official Stores</h3>
+            <p style="color: #666; font-size: 0.9rem; line-height: 1.6;">
+                Professional retailers and big brands. Scale your presence across the KIU demographic 
+                with dedicated store branding and trust badges.
+            </p>
+            <ul style="margin-top: 15px; list-style: none; padding: 0; font-size: 0.85rem; color: #444;">
+                <li><i class="fa-solid fa-check" style="color: #b7791f;"></i> Bulk Order Management</li>
+                <li><i class="fa-solid fa-check" style="color: #b7791f;"></i> Brand Authenticity Badge</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- The Form Section -->
+    <div id="vendor-form" style="background: white; border: 2px solid #001f3f; border-radius: 20px; padding: 40px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+        <h2 style="text-align: center; margin-bottom: 30px; color: #001f3f;">Store Registration</h2>
+        <form method="POST" action="{% url 'create_store' %}">
+            {% csrf_token %}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="grid-column: 1 / span 2;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px;">Store Name</label>
+                    <input type="text" name="store_name" required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px;">Phone Number</label>
+                    <input type="text" name="whatsapp" placeholder="e.g. 070..." required style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px;">Category</label>
+                    <select name="category" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
+                        <option>Electronics</option>
+                        <option>Fashion</option>
+                        <option>Groceries</option>
+                        <option>Services</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" style="width: 100%; background: #27ae60; color: white; padding: 15px; border-radius: 10px; border: none; font-weight: 700; font-size: 1.1rem; margin-top: 30px; cursor: pointer;">
+                Create My Store
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}

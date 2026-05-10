@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width: 800px; margin: 40px auto; padding: 0 20px;">
+    <a href="{% url 'home' %}" style="text-decoration: none; color: #7f8c8d; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; margin-bottom: 20px;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Marketplace
+    </a>
+
+    <h2 style="color: #001f3f; margin-bottom: 25px;">
+        <i class="fa-solid fa-inbox"></i> Your Conversations
+    </h2>
+
+    {% if messages %}
+        <div style="background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); overflow: hidden;">
+            {% for msg in messages %}
+                
+                {% if msg.sender == request.user %}
+                    {% with other_id=msg.receiver.id %}
+                        <a href="{% url 'chat_thread' msg.product.id other_id %}" 
+                           style="text-decoration: none; color: inherit; display: block; border-bottom: 1px solid #f0f0f0; transition: background 0.3s; padding: 20px;"
+                           onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='white'">
+                           
+                           <div style="display: flex; justify-content: space-between; align-items: center;">
+                               <div style="display: flex; align-items: center; gap: 15px;">
+                                   <img src="{{ msg.product.imageURL }}" style="width: 55px; height: 55px; border-radius: 10px; object-fit: cover; border: 1px solid #eee;">
+                                   <div style="overflow: hidden;">
+                                       <h4 style="margin: 0; color: #001f3f; font-size: 1.1rem;">{{ msg.product.title }}</h4>
+                                       <p style="margin: 3px 0 0; font-size: 0.85rem; color: #7f8c8d;">
+                                           <b>To:</b> {{ msg.receiver.username }}
+                                       </p>
+                                       <p style="margin: 5px 0 0; color: #555; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                           <i class="fa-solid fa-reply" style="font-size: 0.8rem; color: #bdc3c7;"></i> {{ msg.content|truncatechars:60 }}
+                                       </p>
+                                   </div>
+                               </div>
+                               <div style="text-align: right; min-width: 100px;">
+                                   <span style="display: block; font-size: 0.75rem; color: #bdc3c7; margin-bottom: 5px;">{{ msg.timestamp|timesince }} ago</span>
+                               </div>
+                           </div>
+                        </a>
+                    {% endwith %}
+                {% else %}
+                    {% with other_id=msg.sender.id %}
+                        <a href="{% url 'chat_thread' msg.product.id other_id %}" 
+                           style="text-decoration: none; color: inherit; display: block; border-bottom: 1px solid #f0f0f0; transition: background 0.3s; padding: 20px;"
+                           onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='white'">
+                           
+                           <div style="display: flex; justify-content: space-between; align-items: center;">
+                               <div style="display: flex; align-items: center; gap: 15px;">
+                                   <img src="{{ msg.product.imageURL }}" style="width: 55px; height: 55px; border-radius: 10px; object-fit: cover; border: 1px solid #eee;">
+                                   <div style="overflow: hidden;">
+                                       <h4 style="margin: 0; color: #001f3f; font-size: 1.1rem;">{{ msg.product.title }}</h4>
+                                       <p style="margin: 3px 0 0; font-size: 0.85rem; color: #7f8c8d;">
+                                           <b>From:</b> {{ msg.sender.username }}
+                                       </p>
+                                       <p style="margin: 5px 0 0; color: #555; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                           {{ msg.content|truncatechars:60 }}
+                                       </p>
+                                   </div>
+                               </div>
+                               <div style="text-align: right; min-width: 100px;">
+                                   <span style="display: block; font-size: 0.75rem; color: #bdc3c7; margin-bottom: 5px;">{{ msg.timestamp|timesince }} ago</span>
+                                   {% if not msg.is_read and msg.receiver == request.user %}
+                                       <span style="background: #e74c3c; width: 10px; height: 10px; border-radius: 50%; display: inline-block;"></span>
+                                   {% endif %}
+                               </div>
+                           </div>
+                        </a>
+                    {% endwith %}
+                {% endif %}
+
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 15px; border: 2px dashed #ddd;">
+            <i class="fa-solid fa-comment-slash fa-3x" style="color: #bdc3c7; margin-bottom: 20px;"></i>
+            <h3 style="color: #7f8c8d;">No messages yet</h3>
+            <p style="color: #bdc3c7;">Your chat history will appear here once you contact a vendor.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

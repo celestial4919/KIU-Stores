@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ product.title }} | KIU Stores{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 20px auto;">
+    <a href="{% url 'home' %}" style="text-decoration: none; color: #7f8c8d; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; margin-bottom: 20px;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Marketplace
+    </a>
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 40px; background: white; padding: 30px; border-radius: 15px; border: 1px solid #eee;">
+        
+        <div style="background: #fdfdfd; border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: center;">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" style="max-width: 100%; border-radius: 8px; transition: transform 0.3s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+            {% else %}
+                <div style="height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ccc;">
+                    <i class="fa-solid fa-image fa-4x"></i>
+                    <p style="margin-top: 10px;">No Image Available</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div style="display: flex; flex-direction: column;">
+            <div style="margin-bottom: 10px;">
+                <span style="background: #f0f2f5; color: #555; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                    {{ product.category.name|default:"General" }}
+                </span>
+            </div>
+
+            <h1 style="margin: 0; color: #001f3f; font-size: 2.2rem; font-weight: 800;">{{ product.title }}</h1>
+            
+            <p style="color: #27ae60; font-size: 2rem; font-weight: 800; margin: 15px 0;">
+                USh {{ product.price|floatformat:0 }}
+            </p>
+            
+            <div style="border-top: 1px solid #eee; padding-top: 20px; margin-bottom: 20px;">
+                <h4 style="margin: 0 0 10px 0; color: #001f3f; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">Description</h4>
+                <p style="line-height: 1.6; color: #555; font-size: 1rem;">{{ product.description }}</p>
+            </div>
+
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 25px; border-left: 4px solid #001f3f;">
+                <p style="margin: 0; font-size: 0.9rem; color: #333;">
+                    <strong>Sold By:</strong> 
+                    <a href="{% url 'store_detail' product.vendor.id %}" style="color: #001f3f; font-weight: 700; text-decoration: none;">
+                        {{ product.vendor.store_name|default:product.vendor.username }}
+                    </a>
+                </p>
+            </div>
+
+            <div style="border: 1px solid #001f3f; border-radius: 10px; padding: 20px; background: #ffffff; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; color: #001f3f; font-weight: 700; margin-bottom: 8px;">
+                    <i class="fa-solid fa-shield-halved"></i> KIU Escrow Protected
+                </div>
+                <p style="font-size: 0.85rem; color: #666; line-height: 1.4;">
+                    Your money is held securely by KIU Stores. Funds are only released to the seller after you confirm receipt of the item at a designated campus safe-zone.
+                </p>
+            </div>
+
+            <button style="background: #001f3f; color: white; border: none; padding: 18px; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; width: 100%; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                Secure Checkout with Escrow
+            </button>
+
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-top: 20px;">
+    <h4 style="color: #001f3f;"><i class="fa-solid fa-comments"></i> Interested in this item?</h4>
+    <form action="{% url 'send_message' product.id %}" method="POST">
+        {% csrf_token %}
+        <textarea name="content" placeholder="Ask about availability, price, or pickup..." style="width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px; margin-top: 10px;"></textarea>
+        <button type="submit" style="width: 100%; background: #001f3f; color: white; padding: 12px; border: none; border-radius: 8px; margin-top: 10px; font-weight: 600; cursor: pointer;">
+            Send Message to Vendor
+        </button>
+    </form>
+    <div style="margin-top: 30px; border-top: 2px solid #e61919; padding-top: 15px; text-align: center;">
+    <a href="{% url 'report_product' product.id %}" 
+       style="color: #95a5a6; font-size: 0.85rem; text-decoration: none; transition: all 0.3s ease;"
+       onmouseover="this.style.color='#e61919'; this.style.textShadow='0 0 8px rgba(230, 25, 25, 0.4)';"
+       onmouseout="this.style.color='#95a5a6'; this.style.textShadow='none';">
+        <i class="fa-solid fa-flag"></i> Report suspicious listing
+    </a>
+    </div>
+</div>
+        </div>
+    </div>
+
+    {% if related_products %}
+    <div style="margin-top: 50px;">
+        <h3 style="color: #001f3f; font-weight: 800; margin-bottom: 20px;">More from {{ product.category.name|default:"this category" }}</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px;">
+            {% for related in related_products %}
+                <a href="{% url 'product_detail' related.id %}" style="text-decoration: none; color: inherit;">
+                    <div style="background: white; border: 1px solid #eee; border-radius: 10px; padding: 10px; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <img src="{{ related.image.url }}" style="width: 100%; height: 140px; object-fit: contain; border-radius: 5px;">
+                        <h4 style="font-size: 0.9rem; margin: 10px 0 5px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ related.title }}</h4>
+                        <p style="color: #27ae60; font-weight: 700; font-size: 0.9rem; margin: 0;">USh {{ related.price|floatformat:0 }}</p>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Results for "{{ query }}"{% endblock %}
+
+{% block content %}
+<div class="search-results-container">
+    <h2 style="margin-bottom: 20px;">Results for: "{{ query }}"</h2>
+
+    {% if results %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+            {% for product in results %}
+    <div class="product-card" style="border: 1px solid #eee; padding: 15px; border-radius: 10px; text-align: center;">
+        {% if product.image %}
+            <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-width: 100%; height: 150px; object-fit: cover; border-radius: 5px; margin-bottom: 10px;">
+        {% else %}
+            <div style="height: 150px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border-radius: 5px; margin-bottom: 10px;">
+                <i class="fa-solid fa-image" style="color: #ccc; font-size: 2rem;"></i>
+            </div>
+        {% endif %}
+
+        <h3 style="font-size: 1.1rem; color: #001f3f;">{{ product.title }}</h3>
+        <p style="color: #28a745; font-weight: bold;">UGX {{ product.price|floatformat:0 }}</p>
+        <a href="{% url 'product_detail' product.id %}" style="display: inline-block; margin-top: 10px; font-size: 0.9rem; color: #001f3f; text-decoration: none; border: 1px solid #001f3f; padding: 5px 10px; border-radius: 5px;">View Details</a>
+    </div>
+{% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 50px;">
+            <i class="fa-solid fa-face-frown" style="font-size: 3rem; color: #ccc;"></i>
+            <p style="margin-top: 15px; color: #777;">No products found matching your search. Try different keywords!</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

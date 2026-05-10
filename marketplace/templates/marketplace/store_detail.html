@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin-top: 15px;">
+    <!-- Vendor Profile Header -->
+    <div style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 25px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+        <div style="width: 70px; height: 70px; background: #f8f9fa; border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd;">
+            <i class="fa-solid fa-shop fa-2xl" style="color: #001f3f;"></i>
+        </div>
+        
+        <h2 style="color: #2c3e50; margin: 0 0 5px 0;">{{ vendor.store_name|default:vendor.username }}</h2>
+        {% if request.user.is_authenticated and request.user != vendor %}
+    <a href="{% url 'toggle_follow' vendor.id %}" style="text-decoration: none;">
+        <button style="background: {% if vendor in request.user.following.all %}#f0f2f2{% else %}#001f3f{% endif %}; 
+                       color: {% if vendor in request.user.following.all %}#111{% else %}white{% endif %}; 
+                       border: 1px solid #d5d9d9; padding: 6px 15px; border-radius: 20px; font-weight: 600; cursor: pointer;">
+            {% if vendor in request.user.following.all %}
+                Following
+            {% else %}
+                Follow Store
+            {% endif %}
+        </button>
+    </a>
+{% endif %}
+        {% if vendor.is_official_store %}
+            <span style="background: #fff8e1; border: 1px solid #ffc107; padding: 3px 12px; border-radius: 20px; color: #b7791f; font-size: 0.75rem; font-weight: bold; text-transform: uppercase;">
+                🏢 Official Store
+            </span>
+        {% elif vendor.is_student_seller %}
+            <span style="background: #e8f5e9; border: 1px solid #4caf50; padding: 3px 12px; border-radius: 20px; color: #2e7d32; font-size: 0.75rem; font-weight: bold; text-transform: uppercase;">
+                🧑‍🎓 Student Seller
+            </span>
+        {% endif %}
+        
+
+    <div style="margin: 20px 0; display: flex; align-items: center; justify-content: center; gap: 30px;">
+    
+    <div style="text-align: center;">
+        <span style="display: block; font-weight: 800; font-size: 1.3rem; color: #001f3f; line-height: 1;">
+            {{ vendor.followers.count }}
+        </span>
+        <span style="font-size: 0.65rem; color: #95a5a6; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+            Followers
+        </span>
+    </div>
+
+    <div style="height: 30px; width: 1px; background: #eee;"></div>
+
+    <div style="text-align: center;">
+        <span style="display: block; font-weight: 800; font-size: 1.3rem; color: #001f3f; line-height: 1;">
+            {{ products.count }}
+        </span>
+        <span style="font-size: 0.65rem; color: #95a5a6; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">
+            Products
+        </span>
+    </div>
+</div>
+
+        <p style="color: #7f8c8d; font-size: 0.9rem; margin-top: 15px; max-width: 500px; margin-left: auto; margin-right: auto;">
+            {{ vendor.bio|default:"Welcome to my shop! Browse my latest items available on campus." }}
+        </p>
+    </div>
+
+    <h3 style="margin: 25px 0 15px 0; color: #2c3e50; font-weight: 700;">All Items from this Store</h3>
+    <hr style="border: 0; height: 1px; background: #eee; margin-bottom: 20px;">
+
+    <!-- Product Grid (Reusing your home_4 layout) -->
+    <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px;">
+        {% for product in products %}
+            <div class="compact-card" style="background: white; border: 1px solid #eee; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
+                <!-- Image Section (Cloudinary powered) -->
+                <div style="height: 140px; overflow: hidden; background: #fdfdfd; padding: 5px;">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" style="width: 100%; height: 100%; object-fit: contain;">
+                    {% else %}
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #eee;">
+                            <i class="fa-solid fa-image fa-2xl"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div style="padding: 10px;">
+                    <h3 style="margin: 0; color: #333; font-size: 0.9rem; height: 2.4em; overflow: hidden;">{{ product.title }}</h3>
+                    <p style="color: #27ae60; font-weight: 700; margin: 5px 0;">USh {{ product.price|floatformat:0 }}</p>
+                    
+                    <a href="{% url 'product_detail' product.id %}" style="text-decoration: none;">
+                        <button style="width: 100%; background: #f0f2f2; border: 1px solid #d5d9d9; padding: 5px; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
+                            View Details
+                        </button>
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #7f8c8d;">This vendor currently has no items for sale.</p>
+        {% endfor %}
+    </div>
+    <a href="{% url 'home' %}" style="text-decoration: none; color: #7f8c8d; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; margin-bottom: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Marketplace
+    </a>
+</div>
+{% endblock %}

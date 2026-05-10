@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div style="max-width: 1100px; margin: 40px auto; padding: 0 20px; font-family: 'Poppins', sans-serif;">
+    
+    <!-- VENDOR BRAND HEADER -->
+    <div style="background: #001f3f; color: white; border-radius: 20px; padding: 50px 30px 70px 30px; text-align: center; position: relative; box-shadow: 0 10px 30px rgba(0,31,63,0.2);">
+        <h1 style="font-size: 3rem; margin-bottom: 5px; font-weight: 900;">{{ vendor.store_name }}</h1>
+        <p style="font-size: 1.2rem; opacity: 0.9; margin-bottom: 25px;">{{ vendor.business_specialty|default:"Official KIU Vendor" }}</p>
+        
+        <!-- ACTION BUTTONS -->
+        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+            <a href="{% url 'vendor_dashboard' %}" style="background: #27ae60; color: white; padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: 700; box-shadow: 0 4px 15px rgba(39,174,96,0.3);">
+                <i class="fa-solid fa-chart-line"></i> MANAGE STORE
+            </a>
+            <a href="{% url 'profile' %}" style="background: transparent; border: 2px solid white; color: white; padding: 12px 30px; border-radius: 50px; text-decoration: none; font-weight: 700;">
+                <i class="fa-solid fa-user-pen"></i> EDIT DETAILS
+            </a>
+        </div>
+    </div>
+
+    <!-- QUICK INFO BAR (HOURS & LOCATION) -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: -40px; padding: 0 20px; position: relative; z-index: 10;">
+        <!-- Location Card -->
+        <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; border-bottom: 4px solid #001f3f;">
+            <div style="font-size: 1.5rem; color: #001f3f;"><i class="fa-solid fa-location-dot"></i></div>
+            <div>
+                <p style="margin: 0; font-size: 0.8rem; color: #888; text-transform: uppercase;">Location</p>
+                <p style="margin: 0; font-weight: 600; color: #333;">{{ vendor.location|default:"KIU Campus" }}</p>
+            </div>
+        </div>
+        <!-- Working Hours Card -->
+        <div style="background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 15px; border-bottom: 4px solid #27ae60;">
+            <div style="font-size: 1.5rem; color: #27ae60;"><i class="fa-solid fa-clock"></i></div>
+            <div>
+                <p style="margin: 0; font-size: 0.8rem; color: #888; text-transform: uppercase;">Working Hours</p>
+                <p style="margin: 0; font-weight: 600; color: #333;">{{ vendor.working_hours }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px; margin-top: 50px;">
+        
+        <!-- LEFT COLUMN: PRODUCTS -->
+        <div>
+            <h3 style="color: #001f3f; margin-bottom: 25px; border-left: 5px solid #27ae60; padding-left: 15px;">Your Inventory</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
+                {% for product in products %}
+                    <div style="background: white; border-radius: 15px; overflow: hidden; border: 1px solid #eee; transition: 0.3s;">
+                        <img src="{{ product.imageURL }}" style="width: 100%; height: 180px; object-fit: cover;">
+                        <div style="padding: 15px;">
+                            <h4 style="margin: 0; color: #001f3f;">{{ product.title }}</h4>
+                            <p style="color: #27ae60; font-weight: 800; font-size: 1.1rem; margin: 10px 0;">UGX {{ product.price|floatformat:0 }}</p>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p style="color: #999;">No products listed yet. Go to your dashboard to add some!</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: REVIEWS & BIO -->
+        <div>
+            <h3 style="color: #001f3f; margin-bottom: 25px;">Store Bio</h3>
+            <p style="color: #666; line-height: 1.6; background: #f9f9f9; padding: 20px; border-radius: 12px; font-style: italic;">
+                "{{ vendor.bio|default:'No bio provided yet. Add one to tell students about your business!' }}"
+            </p>
+
+            <h3 style="color: #001f3f; margin-top: 40px; margin-bottom: 20px;">Student Reviews</h3>
+            {% for review in reviews %}
+                <div style="background: white; border-bottom: 1px solid #eee; padding: 15px 0;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong style="color: #333;">@{{ review.reviewer.username }}</strong>
+                        <span style="color: #ffc107;">
+                            {% for i in "12345"|make_list %}
+                                <i class="{% if forloop.counter <= review.rating %}fa-solid{% else %}fa-regular{% endif %} fa-star"></i>
+                            {% endfor %}
+                        </span>
+                    </div>
+                    <p style="color: #666; font-size: 0.9rem; margin-top: 5px;">{{ review.comment }}</p>
+                    {% if review.is_verified_purchase %}
+                        <span style="font-size: 0.7rem; background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 10px;">Verified Student Purchase</span>
+                    {% endif %}
+                </div>
+            {% empty %}
+                <p style="color: #999;">No reviews yet. Your great service will earn them soon!</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

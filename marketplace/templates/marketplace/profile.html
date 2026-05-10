@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width: 700px; margin: 30px auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+    
+    <form method="POST" enctype="multipart/form-data" id="profileForm">
+        {% csrf_token %}
+        <!-- Back to Home Link -->
+<div style="margin-bottom: 20px; display: flex; justify-content: flex-start;">
+    <a href="{% url 'home' %}" style="text-decoration: none; color: #777; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: color 0.2s;" onmouseover="this.style.color='#001f3f'" onmouseout="this.style.color='#777'">
+        <i class="fa-solid fa-arrow-left"></i> Back to Marketplace
+    </a>
+</div>
+        <!-- HEADER: Profile Picture -->
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; margin: 0 auto; border: 3px solid #001f3f;">
+                {% if user.socialaccount_set.all.0.get_avatar_url %}
+                    <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% elif user.image %}
+                    <img src="{{ user.image.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <div style="background: #001f3f; height: 100%; display: flex; align-items: center; justify-content: center; color: white;">
+                        <i class="fa-solid fa-user fa-3x"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <!-- Edit Mode Only: Image Upload[cite: 2] -->
+            <div class="edit-mode" style="display: none; margin-top: 10px;">
+                <input type="file" name="image" style="font-size: 0.8rem;">
+            </div>
+        </div>
+
+        <!-- INFO SECTIONS -->
+        <div style="display: grid; gap: 20px;">
+            
+            <!-- Username & Email -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <label style="font-weight: 700; font-size: 0.8rem; color: #777;">USERNAME</label>
+                    <p class="view-mode">{{ user.username }}</p>
+                    <input type="text" name="username" value="{{ user.username }}" class="edit-mode" style="display: none; width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                </div>
+                <div>
+                    <label style="font-weight: 700; font-size: 0.8rem; color: #777;">EMAIL</label>
+                    <p class="view-mode">{{ user.email }}</p>
+                    <input type="email" name="email" value="{{ user.email }}" class="edit-mode" style="display: none; width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                </div>
+            </div>
+
+            <!-- VENDOR SECTION (If applicable)[cite: 2] -->
+            {% if user.is_student_seller or user.is_official_store %}
+            <div style="background: #f9f9f9; padding: 20px; border-radius: 10px; border-left: 4px solid #27ae60;">
+                <h4 style="margin-bottom: 15px; color: #27ae60;">Store Details</h4>
+                <div style="display: grid; gap: 15px;">
+                    <div>
+                        <label style="font-weight: 700; font-size: 0.8rem;">STORE NAME</label>
+                        <p class="view-mode">{{ user.store_name|default:"Not set" }}</p>
+                        <input type="text" name="store_name" value="{{ user.store_name|default:'' }}" class="edit-mode" style="display: none; width: 100%; padding: 8px;">
+                    </div>
+                    <div>
+                        <label style="font-weight: 700; font-size: 0.8rem;">PORTFOLIO URL</label>
+                        <p class="view-mode">{{ user.portfolio_url|default:"No link provided" }}</p>
+                        <input type="url" name="portfolio_url" value="{{ user.portfolio_url|default:'' }}" class="edit-mode" style="display: none; width: 100%; padding: 8px;" placeholder="https://instagram.com/yourshop">
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- COMMON FIELDS: Bio, Phone, Location[cite: 2] -->
+            <!-- Add this section inside your profileForm, replacing the "COMMON FIELDS" area -->
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 10px;">
+    <!-- Phone Number Section -->
+    <div>
+        <label style="font-weight: 700; font-size: 0.8rem; color: #777;">PHONE NUMBER</label>
+        <p class="view-mode" style="font-size: 0.95rem; margin-top: 5px;">
+            <i class="fa-solid fa-phone" style="font-size: 0.8rem; color: #27ae60;"></i> 
+            {{ user.phone_number|default:"No phone added" }}
+        </p>
+        <input type="text" name="phone_number" value="{{ user.phone_number|default:'' }}" 
+               class="edit-mode" placeholder="e.g. 0700 000 000"
+               style="display: none; width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+    </div>
+
+    <!-- Location Section -->
+    <div>
+        <label style="font-weight: 700; font-size: 0.8rem; color: #777;">LOCATION </label>
+        <p class="view-mode" style="font-size: 0.95rem; margin-top: 5px;">
+            <i class="fa-solid fa-location-dot" style="font-size: 0.8rem; color: #e74c3c;"></i> 
+            {{ user.location|default:"Area of Residence" }}
+        </p>
+        <input type="text" name="location" value="{{ user.location|default:'' }}" 
+               class="edit-mode" placeholder="e.g. Main Campus, Room 12"
+               style="display: none; width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+    </div>
+</div>
+
+<!-- Bio Section (Full Width below) -->
+<div style="margin-top: 20px;">
+    <label style="font-weight: 700; font-size: 0.8rem; color: #777;">ABOUT ME (BIO)</label>
+    <p class="view-mode" style="background: #fdfdfd; padding: 10px; border-radius: 8px; border: 1px solid #f0f0f0; margin-top: 5px;">
+        {{ user.bio|default:"Tell the campus a bit about yourself..." }}
+    </p>
+    <textarea name="bio" class="edit-mode" rows="3"
+              style="display: none; width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit;">{{ user.bio|default:'' }}</textarea>
+</div>
+
+        <!-- BUTTONS -->
+        <div style="margin-top: 30px; text-align: center;">
+            <button type="button" id="editBtn" onclick="toggleEdit()" style="background: #001f3f; color: white; padding: 12px 30px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                Edit Profile
+            </button>
+
+            <div id="saveGroup" style="display: none;">
+                <button type="submit" style="background: #27ae60; color: white; padding: 12px 30px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                    Save Changes
+                </button>
+                <button type="button" onclick="toggleEdit()" style="background: #eee; color: #333; padding: 12px 30px; border: none; border-radius: 8px; cursor: pointer; margin-left: 10px;">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function toggleEdit() {
+        const viewElements = document.querySelectorAll('.view-mode');
+        const editElements = document.querySelectorAll('.edit-mode');
+        const editBtn = document.getElementById('editBtn');
+        const saveGroup = document.getElementById('saveGroup');
+
+        if (editBtn.style.display !== 'none') {
+            viewElements.forEach(el => el.style.display = 'none');
+            editElements.forEach(el => el.style.display = 'block');
+            editBtn.style.display = 'none';
+            saveGroup.style.display = 'block';
+        } else {
+            viewElements.forEach(el => el.style.display = 'block');
+            editElements.forEach(el => el.style.display = 'none');
+            editBtn.style.display = 'block';
+            saveGroup.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

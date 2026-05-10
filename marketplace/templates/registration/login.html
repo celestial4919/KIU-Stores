@@ -1,0 +1,62 @@
+{% load socialaccount %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f4f7f6; font-family: sans-serif;">
+    <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); width: 100%; max-width: 400px;">
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="color: #001f3f; margin: 0; letter-spacing: 1px; font-weight: 900;">KIU STORES</h2>
+            <p style="color: #7f8c8d; font-size: 0.9em; margin-top: 5px;">Secure Campus Marketplace</p>
+        </div>
+
+        {% if form.errors %}
+            <div style="background: #fff5f5; color: #c0392b; padding: 10px; border-radius: 5px; margin-bottom: 20px; font-size: 0.85em; text-align: center; border: 1px solid #f5c6cb;">
+                Invalid username or password.
+            </div>
+        {% endif %}
+        
+        <form method="post" style="display: flex; flex-direction: column; gap: 20px;">
+            {% csrf_token %}
+            
+            <div>
+                <label style="display: block; font-size: 0.85em; font-weight: bold; color: #001f3f; margin-bottom: 8px;">Username</label>
+                <input type="text" name="username" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; outline: none;">
+            </div>
+
+            <div style="position: relative;">
+                <label style="display: block; font-size: 0.85em; font-weight: bold; color: #001f3f; margin-bottom: 8px;">Password</label>
+                <input type="password" id="password" name="password" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; outline: none;">
+                <i class="fa-solid fa-eye" id="togglePassword" style="position: absolute; right: 12px; top: 38px; cursor: pointer; color: #7f8c8d;"></i>
+            </div>
+
+            <button type="submit" style="background: #001f3f; color: white; border: none; padding: 14px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 10px;">
+                Enter Marketplace
+            </button>
+        </form>
+
+        <div style="margin-top: 20px; position: relative; text-align: center;">
+            <span style="background: white; padding: 0 10px; color: #95a5a6; font-size: 0.8em; position: relative; z-index: 1;">OR</span>
+            <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #eee; z-index: 0;"></div>
+        </div>
+
+        <a href="{% provider_login_url 'google' %}" style="display: flex; align-items: center; justify-content: center; gap: 12px; background: white; border: 1px solid #001f3f; padding: 12px; border-radius: 6px; text-decoration: none; color: #001f3f; font-weight: bold; margin-top: 20px; transition: 0.3s;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo" style="width: 20px; height: 20px;">
+            <span>Continue with Google</span>
+        </a>
+
+        <div style="margin-top: 25px; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
+            <p style="font-size: 0.9em; color: #7f8c8d;">
+                New to the community? <a href="{% url 'signup' %}" style="color: #27ae60; text-decoration: none; font-weight: bold;">Create Account</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const togglePassword = document.querySelector('#togglePassword');
+    const password = document.querySelector('#password');
+
+    togglePassword.addEventListener('click', function (e) {
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        this.classList.toggle('fa-eye-slash');
+    });
+</script>

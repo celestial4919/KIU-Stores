@@ -1,0 +1,697 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}KIU Stores{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;1,300&family=Playfair+Display:ital,wght@0,400;1,400&family=Roboto+Mono:ital,wght@0,300;1,300&family=Lato:ital,wght@0,300;1,300&family=Quicksand:wght@300&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* 1. Global Reset */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: white; font-family: 'Poppins', sans-serif; color: #333; overflow-x: hidden; }
+
+        /* 2. THE MAIN HEADER - Thinner and more modern */
+        header.main-header {
+            background: rgba(253, 253, 253, 0.95); /* Glassmorphism effect */
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #001f3f; /* Slightly thinner line */
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            padding: 5px 5%; /* Very tight vertical padding */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        /* 3. BRANDING - Tighter line-height */
+        .brand-section h1 {
+            font-size: 2.8em; /* Reduced size slightly for a thinner feel */
+            font-weight: 900;
+            letter-spacing: -2px;
+            color: #001f3f;
+            margin: 0;
+            line-height: 1; /* Removes extra vertical space around letters */
+            white-space: nowrap;
+        }
+        .brand-suffix {
+            font-size: 0.5em;
+            font-weight: 400;
+            text-transform: lowercase;
+            color: #555;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+
+        /* 4. MOVING CART */
+        .central-void {
+            flex-grow: 1;
+            height: 20px; /* Reduced from 25px */
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .void-cart {
+            font-size: 22px;
+            color: #001f3f;
+            position: absolute;
+            animation: push_void 6s ease-in-out infinite;
+        }
+
+        /* 5. SECOND ROW - Pulled up higher */
+        .search-area { 
+            width: 100%; 
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            margin-top: 2px; /* Pulls second row closer to first */
+            margin-bottom: 5px; 
+        }
+
+        .slogan {
+            font-size: 0.8rem; /* Slightly smaller for elegance */
+            font-weight: 400;
+            color: #555;
+            font-style: italic;
+            white-space: nowrap;
+            flex-basis: 220px;
+            opacity: 0.8;
+        }
+
+        .slogan-left { text-align: left; }
+        .slogan-right { text-align: right; }
+
+        .search-form {
+            display: flex;
+            background: #ffffff;
+            border: 1px solid #eee; /* Softer border */
+            border-radius: 20px;
+            overflow: hidden;
+            height: 30px; /* Slimmer search bar */
+            width: 100%;
+            max-width: 380px;
+            transition: all 0.3s ease;
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .search-form:focus-within {
+            border-color: #001f3f;
+            box-shadow: 0 0 5px rgba(0, 31, 63, 0.1);
+        }
+
+        .search-form input { width: 100%; border: none; padding: 0 15px; outline: none; font-size: 0.8rem; color: #666; background: transparent;
+    color: var(--text-main); }
+        .search-form button { background: #001f3f; border: none; padding: 0 12px; color: white; cursor: pointer; }
+
+        .logo-signature img { height: 45px; width: auto; } /* Smaller logo */
+
+        /* --- MOBILE RESPONSIVE --- */
+        @media (max-width: 768px) {
+            header.main-header {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                padding: 6px 12px;
+                gap: 2px;
+            }
+            .slogan { display: none; }
+            .brand-section h1 { font-size: 2em; }
+            .central-void { height: 18px; }
+            .void-cart { font-size: 16px; }
+            .right-section { justify-self: end; }
+            .logo-signature img { height: 32px; }
+            .search-area { grid-column: 1 / span 3; display: flex; justify-content: center; }
+            .search-form { max-width: 90%; height: 28px; }
+        }
+
+        /* KEYFRAMES */
+        @keyframes push_void {
+            0% { transform: translateX(-15px); }
+            50% { transform: translateX(15px); }
+            100% { transform: translateX(-15px); }
+        }
+
+        .content-wrapper { padding: 15px 5%; }
+
+        /* Add this to your <style> block in base.html */
+@media (max-width: 600px) {
+    .product-grid {
+        grid-template-columns: repeat(2, 1fr) !important; /* Forces 2 cards per row */
+        gap: 10px !important;
+        padding: 10px !important;
+    }
+    
+    .compact-card {
+        padding: 8px !important; /* Tightens padding so they fit perfectly */
+    }
+
+    .compact-card h3 {
+        font-size: 0.85rem !important; /* Smaller text for smaller cards */
+    }
+}
+
+
+
+    /* The Wrapper that sticks to the top */
+    .sticky-nav-wrapper {
+    position: sticky;
+    top: 60px; 
+    z-index: 999;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 8px 0; /* Reduced from 12px to 8px to save screen space */
+    margin-bottom: 8px;
+    }
+
+    /* Horizontal Scroll for Pills */
+    .pill-container {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding: 0 15px;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none;  /* IE/Edge */
+    }
+
+    .pill-container::-webkit-scrollbar {
+        display: none; /* Chrome/Safari/Opera */
+    }
+
+    /* The Pill Design */
+    .pill {
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 5px 16px; /* Reduced from 8px to 5px for thickness */
+    border-radius: 50px;
+    font-size: 0.8rem; /* Slightly smaller font for a cleaner look */
+    font-weight: 400; /* Lighter weight makes it look more refined */
+    color: #666;
+    background: #f5f7f8; /* Slightly lighter grey */
+    border: 1px solid rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+    background: var(--input-bg);
+    color: var(--muted-text);
+    border: 1px solid var(--border-color);
+    }
+
+    /* Active Pill (The Navy look) */
+    .pill.active {
+        background: #2c3e50;
+        color: white;
+    }
+
+    /* Thrift Pill Style */
+    .pill.thrift {
+        border: 1px solid #2c3e50;
+        background: white;
+        color: #2c3e50;
+    }
+
+    /* Deals Pill Style */
+    .pill.deals {
+        color: #e74c3c;
+        border: 1px solid #e74c3c;
+        background: #fff5f5;
+    }
+
+    /* Specialized Cart Pill */
+.pill-cart {
+    background: #001f3f !important; /* Navy base */
+    color: white !important;
+    font-weight: 700 !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-right: 35px !important; /* Extra space for the badge */
+}
+
+/* The Notification Badge */
+.pill-cart .badge {
+    position: absolute;
+    right: 5px;
+    background: #27ae60; /* Celestial Green for visibility */
+    color: white;
+    font-size: 0.65rem;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #001f3f; /* Seamless blend with pill */
+}
+
+/* Push cart to the far right if there is space */
+.pill-container {
+    display: flex;
+    align-items: center;
+}
+
+    .pill:hover {
+        background: #e2e6e9;
+    }
+
+    #accountDropdown {
+    display: none;
+    position: absolute;
+    top: 75px; 
+    right: 5%;
+    width: 240px;
+    background: #ffffff; 
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+    padding: 20px;
+    color: #333333;
+    background: var(--dropdown-bg); 
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    
+    /* Center the contents of the dropdown container */
+    display: none;
+    flex-direction: column;
+    align-items: center; 
+    text-align: center;
+}
+
+#accountDropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%; /* Ensures the list items take up full width */
+}
+
+#accountDropdown li {
+    padding: 8px 0;
+    display: flex;
+    justify-content: center; /* Centers the links horizontally */
+}
+
+#accountDropdown a {
+    color: #001f3f;
+    text-decoration: none;
+    font-weight: 500;
+    display: flex;
+    flex-direction: column; /* Stacks icon on top of text for a centered look */
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s;
+}
+
+#accountDropdown a i {
+    font-size: 1.1rem; /* Makes icons slightly larger since they're centered */
+}
+
+    /* Fix alignment for side-by-side icons and text */
+#accountDropdown li.menu-item {
+    width: 100%;
+    padding: 2px 0;
+}
+
+#accountDropdown li.menu-item a {
+    flex-direction: row; /* Horizontal alignment */
+    justify-content: flex-start; /* Align to the left */
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    gap: 12px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+/* Hover effect for Vendor and Buyer menus */
+#accountDropdown li.menu-item a:hover {
+    background: #f5f7f8;
+    color: #27ae60; /* Celestial Green hover */
+}
+
+#accountDropdown li.menu-item a i {
+    font-size: 1rem;
+    width: 20px; /* Ensures text aligns perfectly even if icons vary in width */
+    text-align: center;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.toast-notification {
+    min-width: 250px;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* 1. Global Reset & Variables */
+        :root {
+            --bg-main: #ffffff;
+            --text-main: #333333;
+            --header-bg: rgba(253, 253, 253, 0.95);
+            --card-bg: #ffffff;
+            --border-color: #eeeeee;
+            --muted-text: #555555;
+            --dropdown-bg: #ffffff;
+            --input-bg: #ffffff;
+        }
+
+        /* Dark Mode Overrides */
+        body.dark-theme {
+            --bg-main: #121212;
+            --text-main: #e0e0e0;
+            --header-bg: rgba(18, 18, 18, 0.98);
+            --card-bg: #1e1e1e;
+            --border-color: #333333;
+            --muted-text: #b0b0b0;
+            --dropdown-bg: #1e1e1e;
+            --input-bg: #2a2a2a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            background: var(--bg-main); 
+            font-family: 'Poppins', sans-serif; 
+            color: var(--text-main); 
+            overflow-x: hidden;
+            transition: background 0.3s ease, color 0.3s ease; 
+        }
+
+        /* 2. THE MAIN HEADER - Linked to variables */
+        header.main-header {
+            background: var(--header-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #001f3f;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+            /* ... rest of your header CSS ... */
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Notification Toast Container -->
+{% if messages %}
+    <div id="msg-container" style="position: fixed; top: 80px; right: 20px; z-index: 2000; display: flex; flex-direction: column; gap: 10px;">
+        {% for message in messages %}
+            <div class="toast-notification" style="background: #27ae60; color: white; padding: 12px 25px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); font-weight: 600; display: flex; align-items: center; gap: 10px; animation: slideIn 0.5s ease forwards;">
+                <i class="fa-solid fa-circle-check"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <script>
+        // Auto-hide the notification after 3 seconds
+        setTimeout(() => {
+            const container = document.getElementById('msg-container');
+            if (container) {
+                container.style.transition = "opacity 0.5s ease";
+                container.style.opacity = "0";
+                setTimeout(() => container.remove(), 500);
+            }
+        }, 3000);
+    </script>
+{% endif %}
+
+    <header class="main-header">
+        <div class="brand-section">
+            <h1 class="brand-name">KIU<span class="brand-suffix">Stores</span></h1>
+        </div>
+        
+        <div class="central-void">
+            <i class="fa-solid fa-cart-shopping void-cart"></i>
+        </div>
+
+        <div class="right-section">
+            <div class="logo-signature">
+                <img src="{% static 'images/final_logo.svg' %}" alt="Celestial Logo">
+            </div>
+        </div>
+
+        <div class="search-area">
+            <div class="slogan slogan-left">Your campus marketplace</div>
+            
+            <form action="{% url 'search' %}" method="GET" class="search-form">
+                <input type="text" name="q" placeholder="Search products..." aria-label="Search">
+                <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </form>
+
+        
+
+            <div class="slogan slogan-right">Need it, get it</div>
+        
+            <div class="user-identity-trigger" onclick="toggleAccountMenu()" style="width: 32px; height: 32px; border-radius: 50%; background: #001f3f; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #ddd; overflow: hidden;">
+            
+                {% if user.is_authenticated %}
+                {% if user.socialaccount_set.all.0.get_avatar_url %}
+            <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" alt="Me" style="width: 100%; height: 100%; object-fit: cover;">
+        {% elif user.image %}
+            <img src="{{ user.image.url }}" alt="Me" style="width: 100%; height: 100%; object-fit: cover;">
+        {% else %}
+            <i class="fa-solid fa-user" style="color: white; font-size: 0.8rem;"></i>
+        {% endif %}
+            {% else %}
+                <i class="fa-solid fa-user" style="color: white; font-size: 0.8rem;"></i>
+            {% endif %}
+        </div>
+
+        </div>
+
+        <div id="accountDropdown">
+    {% if user.is_authenticated %}
+        <!-- User Info Section -->
+        <div style="margin-bottom: 15px; width: 100%;">
+            <p style="font-weight: 700; margin: 0; font-size: 1rem; color: #001f3f;">
+                {% if user.store_name %}{{ user.store_name }}{% else %}{{ user.username }}{% endif %}
+            </p>
+            <p style="font-size: 0.8rem; color: #777; word-break: break-all;">{{ user.email }}</p>
+        </div>
+        
+        <div style="width: 100%; height: 1px; background: #eee; margin-bottom: 10px;"></div>
+        
+        <ul style="width: 100%; list-style: none; padding: 0;">
+            <!-- VERSION 1: VENDOR DROPDOWN (Seller or Official Store) -->
+            {% if user.is_student_seller or user.is_official_store %}
+                <li class="menu-item"><a href="{% url 'profile' %}"><i class="fa-solid fa-circle-user"></i> Profile</a></li>
+                <li class="menu-item"><a href="{% url 'add_product' %}"><i class="fa-solid fa-plus-circle"></i> Add Product</a></li>
+                <li class="menu-item"><a href="{% url 'my_store_profile' %}"><i class="fa-solid fa-store"></i> My Store</a></li>
+                <li class="menu-item">
+    <a href="{% url 'inbox' %}" style="display: flex; justify-content: space-between; align-items: center;">
+        <span><i class="fa-solid fa-envelope"></i> My Inbox</span>
+        
+        {% if unread_count > 0 %}
+            <span style="background: #e74c3c; color: white; border-radius: 50%; padding: 2px 7px; font-size: 0.7rem; font-weight: bold; animation: pulse 2s infinite;">
+                {{ unread_count }}
+            </span>
+        {% endif %}
+    </a>
+</li>
+
+<style>
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+}
+</style>
+                <li class="menu-item"><a href="{% url 'followed_stores' %}"><i class="fa-solid fa-star" style="color: #ffc107;"></i> Followed Stores</a></li>
+                <li class="menu-item"><a href="{% url 'settings_page' %}"><i class="fa-solid fa-sliders"></i> Settings</a></li>
+                {% if not user.is_official_store %}
+    <li class="menu-item" style="border-top: 1px solid #f0f0f0; margin-top: 5px; padding-top: 5px;">
+        <a href="{% url 'business_onboarding' %}" style="color: #27ae60; font-weight: 600;">
+            <i class="fa-solid fa-briefcase"></i> Partner with Us
+        </a>
+    </li>
+{% endif %}
+
+            <!-- VERSION 2: STUDENT/BUYER DROPDOWN -->
+            {% else %}
+                <li class="menu-item"><a href="{% url 'profile' %}"><i class="fa-solid fa-circle-user"></i> Profile</a></li>
+                <li class="menu-item"><a href="{% url 'cart' %}"><i class="fa-solid fa-cart-shopping"></i> Cart</a></li>
+                <li class="menu-item">
+    <a href="{% url 'inbox' %}" style="display: flex; justify-content: space-between; align-items: center;">
+        <span><i class="fa-solid fa-envelope"></i> My Inbox</span>
+        
+        {% if unread_count > 0 %}
+            <span style="background: #e74c3c; color: white; border-radius: 50%; padding: 2px 7px; font-size: 0.7rem; font-weight: bold; animation: pulse 2s infinite;">
+                {{ unread_count }}
+            </span>
+        {% endif %}
+    </a>
+</li>
+
+<style>
+@keyframes pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(231, 76, 60, 0); }
+    100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(231, 76, 60, 0); }
+}
+</style>
+                <li class="menu-item"><a href="{% url 'followed_stores' %}"><i class="fa-solid fa-star" style="color: #ffc107;"></i> Followed Stores</a></li>
+                <li class="menu-item"><a href="#"><i class="fa-solid fa-truck-fast"></i> Track Transaction</a></li>
+                <li class="menu-item"><a href="{% url 'become_vendor' %}"><i class="fa-solid fa-shop"></i> Become a Vendor</a></li>
+                <li class="menu-item"><a href="{% url 'settings_page' %}"><i class="fa-solid fa-sliders"></i> Settings</a></li>
+                {% if not user.is_official_store %}
+    <li class="menu-item" style="border-top: 1px solid #f0f0f0; margin-top: 5px; padding-top: 5px;">
+        <a href="{% url 'business_onboarding' %}" style="color: #27ae60; font-weight: 600;">
+            <i class="fa-solid fa-briefcase"></i> Partner with Us
+        </a>
+    </li>
+{% endif %}
+            {% endif %}
+
+
+            <!-- COMMON LOGOUT -->
+            <li style="margin-top: 10px; padding-top: 15px; border-top: 1px solid #eee;">
+                <form action="{% url 'logout' %}" method="post" style="width: 100%;">
+                    {% csrf_token %}
+                    <button type="submit" style="width: 100%; background: #fdf2f2; color: #e74c3c; border: 1px solid #fadbd8; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fa-solid fa-right-from-bracket"></i> Logout
+                    </button>
+                </form>
+            </li>
+        </ul>
+
+    {% else %}
+        <!-- VERSION 3: GUEST VERSION (Static/Logged Out) -->
+        <div style="padding: 10px; width: 100%;">
+            <p style="font-size: 0.9rem; font-weight: 600; margin-bottom: 15px; color: #001f3f;">Welcome to KIU Stores</p>
+            <a href="{% url 'login' %}" style="background: #001f3f; color: white; padding: 12px; border-radius: 10px; display: block; text-decoration: none; margin-bottom: 15px; font-weight: 700;">Login</a>
+            <p style="font-size: 0.8rem; color: #777; margin-bottom: 10px;">New here?</p>
+            <a href="{% url 'signup' %}" style="color: #27ae60; font-size: 0.85rem; font-weight: 700; text-decoration: none;">Create Account</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    function toggleAccountMenu() {
+        const menu = document.getElementById('accountDropdown');
+        if (menu.style.display === 'none' || menu.style.display === '') {
+        menu.style.display = 'flex';
+    } else {
+        menu.style.display = 'none';
+    }
+    }
+    // Close menu when clicking outside
+    window.onclick = function(event) {
+        if (!event.target.closest('.user-identity-trigger') && !event.target.closest('#accountDropdown')) {
+            document.getElementById('accountDropdown').style.display = 'none';
+        }
+    }
+
+    
+    document.addEventListener("DOMContentLoaded", function() {
+        const cookiePopup = document.getElementById('cookie-popup');
+        const acceptBtn = document.getElementById('accept-cookies');
+
+        // Check if the user already accepted cookies
+        if (!localStorage.getItem('kiu_cookies_accepted')) {
+            setTimeout(() => {
+                cookiePopup.style.display = 'block';
+            }, 2000); // Shows after 2 seconds for a smoother feel
+        }
+
+        acceptBtn.addEventListener('click', function() {
+            // Save the choice in the browser's local storage
+            localStorage.setItem('kiu_cookies_accepted', 'true');
+            cookiePopup.style.fadeOut = "0.5s";
+            cookiePopup.style.display = 'none';
+        });
+    });
+
+</script>
+
+    </header>
+
+        <div class="sticky-nav-wrapper">
+    <div class="pill-container">
+        <a href="/" class="pill {% if active_category == 'all' %}active{% endif %}">All</a>
+        <a href="?category=electronics" class="pill {% if active_category == 'electronics' %}active{% endif %}">Electronics</a>
+        <a href="?category=groceries" class="pill {% if active_category == 'groceries' %}active{% endif %}">Groceries</a>
+        <a href="?category=fashion" class="pill {% if active_category == 'fashion' %}active{% endif %}">Fashion</a>
+        <a href="?category=stationery" class="pill {% if active_category == 'stationery' %}active{% endif %}">Stationery</a>
+        <a href="?category=hostel_essentials" class="pill {% if active_category == 'hostel_essentials' %}active{% endif %}">Hostel Essentials</a>
+        <a href="?category=campus_bites" class="pill {% if active_category == 'campus_bites' %}active{% endif %}" style="border: 1px solid #f39c12; color: #d35400;">
+        <i class="fa-solid fa-cookie-bite" style="margin-right: 5px;"></i> Campus Bites
+        </a>
+        <a href="?category=second_hand" class="pill thrift {% if active_category == 'second_hand' %}active{% endif %}">
+        <i class="fa-solid fa-leaf" style="margin-right: 5px; font-size: 0.85rem;"></i> Campus Thrift
+        </a>
+        <a href="?category=deals" class="pill deals {% if active_category == 'deals' %}active{% endif %}">
+        <i class="fa-solid fa-fire" style="margin-right: 5px; font-size: 0.85rem;"></i> Deals
+        </a>
+        
+    <!-- Inside your <div class="pill-container"> -->
+<a href="{% url 'cart' %}" class="pill pill-cart {% if active_category == 'cart' %}active{% endif %}" style="position: relative; margin-left: auto;">
+    <i class="fa-solid fa-cart-shopping"></i> Cart
+    {% if request.user.is_authenticated and request.user.cart_items.count > 0 %}
+        <span class="badge">
+            {{ request.user.cart_items.count }}
+        </span>
+    {% endif %}
+</a>
+<a href="{% url 'inbox' %}" style="position: relative; color: #001f3f; margin-right: 15px; font-size: 1.2rem;">
+    <i class="fa-solid fa-message"></i>
+    {% if unread_count > 0 %}
+        <span style="position: absolute; top: -5px; right: -8px; background: #e74c3c; color: white; border-radius: 50%; width: 16px; height: 16px; font-size: 0.6rem; display: flex; align-items: center; justify-content: center; border: 2px solid white;">
+            {{ unread_count }}
+        </span>
+    {% endif %}
+</a>
+    </div>
+</div>
+
+    <main class="content-wrapper">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer style="text-align: center; padding: 40px 20px; color: #999; font-size: 0.8em; line-height: 1.6;">
+    <div style="max-width: 700px; margin: 0 auto 25px auto; color: #888;">
+        <p>
+            KIU STORES is the premier digital ecosystem for the Kampala International University community. 
+            We provide a secure, escrow-backed platform for students to trade with confidence, 
+            bridging the gap between affordability and security.
+        </p>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+        <a href="/" style="color: #999; text-decoration: none;">Home</a> | 
+        <a href="{% url 'home' %}?category=electronics" style="color: #999; text-decoration: none;">Electronics</a> | 
+        <a href="{% url 'home' %}?category=fashion" style="color: #999; text-decoration: none;">Fashion</a> | 
+        <a href="{% url 'home' %}?category=second_hand" style="color: #999; text-decoration: none;">Campus Thrift</a>
+    </div>
+
+    <div style="margin-bottom: 25px;">
+        <a href="{% url 'about' %}" style="color: #999; text-decoration: none; margin: 0 5px;">About Us</a> | 
+        <a href="{% url 'contact' %}" style="color: #999; text-decoration: none; margin: 0 5px;">Contact Us</a> |
+        <a href="{% url 'privacy_policy' %}" style="color: #27ae60; text-decoration: none; font-weight: 600; margin: 0 5px;">Privacy Policy</a>
+    </div>
+
+    <div style="border-top: 1px solid #333; padding-top: 20px; max-width: 500px; margin: 0 auto;">
+        &copy; 2026 KIU Stores | Engineered by Celestial Forge
+    </div>
+</footer>
+
+<!-- Cookie Consent Popup -->
+<div id="cookie-popup" style="display: none; position: fixed; bottom: 20px; left: 20px; right: 20px; background: #001f3f; color: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9999; border-left: 5px solid #27ae60;">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px;">
+        <div style="flex: 1; min-width: 250px;">
+            <h4 style="margin: 0 0 5px 0; font-size: 1.1rem;"><i class="fa-solid fa-cookie-bite"></i> We use cookies</h4>
+            <p style="margin: 0; font-size: 0.9rem; opacity: 0.9;">We use cookies to keep you logged in and improve your shopping experience on KIU Stores. Read our <a href="{% url 'privacy_policy' %}" style="color: #27ae60; text-decoration: underline;">Privacy Policy</a>.</p>
+        </div>
+        <button id="accept-cookies" style="background: #27ae60; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s;">
+            I ACCEPT
+        </button>
+    </div>
+</div>
+
+</>
+</html>

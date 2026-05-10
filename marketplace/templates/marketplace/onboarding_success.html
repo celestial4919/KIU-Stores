@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width: 600px; margin: 60px auto; text-align: center; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+    <div style="width: 80px; height: 80px; background: #e8f5e9; color: #27ae60; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+        <i class="fa-solid fa-paper-plane fa-2xl"></i>
+    </div>
+    <h2 style="color: #001f3f;">Application Received!</h2>
+    <p style="color: #7f8c8d; line-height: 1.6; margin-bottom: 30px;">
+        The Celestial Forge team is reviewing your details. We will verify your <b>Merchant Code</b> and shop location. You'll receive the <b>Official Store</b> badge once approved.
+    </p>
+    <a href="{% url 'home' %}" style="background: #001f3f; color: white; padding: 12px 30px; border-radius: 25px; text-decoration: none; font-weight: 600;">
+        Return to Marketplace
+    </a>
+</div>
+{% endblock %}

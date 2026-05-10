@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width: 1000px; margin: 20px auto; padding: 0 15px;">
+    
+    <div style="margin-bottom: 40px;">
+        <h1 style="color: #001f3f; font-size: 1.8rem; margin-bottom: 5px;">Your Starred Stores</h1>
+        <p style="color: #7f8c8d; margin-bottom: 25px;">Quick access to your favorite campus vendors.</p>
+
+        <div style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; scrollbar-width: none;">
+            {% for store in stores %}
+                <a href="{% url 'store_detail' store.id %}" style="text-decoration: none; min-width: 180px;">
+                    <div style="background: white; border: 1px solid #eee; border-radius: 12px; padding: 15px; text-align: center; transition: 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+                        <div style="width: 50px; height: 50px; background: #f8f9fa; border-radius: 50%; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; border: 1px solid #ddd;">
+                            <i class="fa-solid fa-shop" style="color: #001f3f;"></i>
+                        </div>
+                        <h4 style="margin: 0; color: #001f3f; font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {{ store.store_name|default:store.username }}
+                        </h4>
+                        <span style="font-size: 0.7rem; color: #95a5a6; text-transform: uppercase;">View Store</span>
+                    </div>
+                </a>
+            {% empty %}
+                <p style="color: #95a5a6; font-style: italic;">You haven't followed any stores yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div style="border-top: 1px solid #eee; padding-top: 30px;">
+        <h3 style="color: #001f3f; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-sparkles" style="color: #ffc107;"></i> Latest from Your Stars
+        </h3>
+
+        <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+            {% for product in followed_products %}
+                <div class="compact-card" style="background: white; border: 1px solid #eee; border-radius: 8px; overflow: hidden; display: flex; flex-direction: column;">
+                    <div style="height: 140px; overflow: hidden; background: #fdfdfd; padding: 5px;">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" style="width: 100%; height: 100%; object-fit: contain;">
+                        {% else %}
+                            <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #eee;">
+                                <i class="fa-solid fa-image fa-2xl"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div style="padding: 10px;">
+                        <h3 style="margin: 0; color: #333; font-size: 0.85rem; height: 2.4em; overflow: hidden;">{{ product.title }}</h3>
+                        <p style="color: #27ae60; font-weight: 700; margin: 5px 0; font-size: 0.9rem;">USh {{ product.price|floatformat:0 }}</p>
+                        
+                        <div style="font-size: 0.7rem; color: #999; margin-bottom: 8px;">
+                            By {{ product.vendor.store_name|default:product.vendor.username }}
+                        </div>
+
+                        <a href="{% url 'product_detail' product.id %}" style="text-decoration: none;">
+                            <button style="width: 100%; background: #f0f2f2; border: 1px solid #d5d9d9; padding: 5px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; font-weight: 600;">
+                                View Details
+                            </button>
+                        </a>
+                    </div>
+                </div>
+            {% empty %}
+                {% if stores %}
+                    <p style="grid-column: 1/-1; text-align: center; padding: 40px; color: #7f8c8d; background: #f9f9f9; border-radius: 12px;">
+                        Your followed stores haven't posted any items yet.
+                    </p>
+                {% else %}
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px;">
+                        <a href="{% url 'home' %}" style="display: inline-block; background: #001f3f; color: white; padding: 10px 25px; border-radius: 25px; text-decoration: none; font-weight: 600;">
+                            Explore Stores
+                        </a>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us | KIU Stores{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto; padding: 20px 0;">
+    
+    <div style="background: #001f3f; color: white; padding: 60px 20px; border-radius: 20px; text-align: center; margin-bottom: 40px; box-shadow: 0 10px 30px rgba(0,31,63,0.2);">
+        <h1 style="font-size: 2.5rem; font-weight: 900; letter-spacing: -1px; margin-bottom: 10px;">KIU STORES</h1>
+        <p style="font-size: 1.2rem; font-style: italic; color: #27ae60; font-weight: 600;">
+            "Your Campus Marketplace. Need it, Get it."
+        </p>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; align-items: center; margin-bottom: 60px;">
+        <div>
+            <h2 style="color: #001f3f; font-size: 1.8rem; margin-bottom: 20px; border-left: 5px solid #27ae60; padding-left: 15px;">The Ultimate Campus Bridge</h2>
+            <p style="line-height: 1.8; color: #555; margin-bottom: 15px;">
+                KIU Stores is the definitive digital marketplace for the <strong>Kampala International University</strong> community. We provide a seamless bridge connecting student entrepreneurs, well-established local businesses, and specialized service providers directly to the heartbeat of the campus.
+            </p>
+            <p style="line-height: 1.8; color: #555;">
+                From everyday essentials to professional services, we bring the entire economy of the university and its surroundings to your fingertips.
+            </p>
+        </div>
+        <div style="background: #f8f9fa; padding: 30px; border-radius: 15px; border: 1px solid #eee;">
+            <h3 style="color: #001f3f; margin-bottom: 15px;"><i class="fa-solid fa-shield-halved" style="color: #27ae60;"></i> A Premium Experience</h3>
+            <p style="font-size: 0.95rem; color: #666; line-height: 1.6;">
+                By onboarding stable, well-established stores and verified providers, we ensure reliability. Whether navigating your first year or your final semester, KIU Stores simplifies campus life.
+            </p>
+        </div>
+    </div>
+
+    <h2 style="text-align: center; color: #001f3f; margin-bottom: 30px;">Our Ecosystem</h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+        
+        <div class="pillar-card">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <h3>Student Shops</h3>
+            <p>Empowering student side-hustles to stand side-by-side with professional brands.</p>
+        </div>
+
+        <div class="pillar-card">
+            <i class="fa-solid fa-store"></i>
+            <h3>Established Brands</h3>
+            <p>Stable, trusted local stores providing the quality you expect and deserve.</p>
+        </div>
+
+        <div class="pillar-card">
+            <i class="fa-solid fa-gears"></i>
+            <h3>Service Providers</h3>
+            <p>From IT solutions to hair and repairs—get expert help without leaving campus.</p>
+        </div>
+    </div>
+
+    <a href="{% url 'home' %}" style="text-decoration: none; color: #7f8c8d; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; margin-bottom: 10px; margin-top: 10px;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Marketplace
+    </a>
+
+    <div style="margin-top: 60px; text-align: center; padding-top: 30px; border-top: 1px solid #eee;">
+        <p style="color: #999; font-size: 0.9rem;">Engineered & Designed with Excellence by</p>
+        <h3 style="color: #001f3f; letter-spacing: 2px; margin-top: 5px;">CELESTIAL FORGE</h3>
+    </div>
+</div>
+
+
+
+
+
+<style>
+    .pillar-card {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        text-align: center;
+        border: 1px solid #eee;
+        transition: all 0.3s ease;
+    }
+    .pillar-card:hover {
+        transform: translateY(-10px);
+        border-color: #27ae60;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+    .pillar-card i {
+        font-size: 2.5rem;
+        color: #001f3f;
+        margin-bottom: 15px;
+    }
+    .pillar-card h3 {
+        color: #001f3f;
+        margin-bottom: 10px;
+    }
+    .pillar-card p {
+        font-size: 0.9rem;
+        color: #777;
+        line-height: 1.5;
+    }
+</style>
+{% endblock %}

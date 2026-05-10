@@ -1,0 +1,63 @@
+{% load socialaccount %}
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: #f4f7f6; font-family: sans-serif; padding: 40px 20px;">
+    <div style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); width: 100%; max-width: 450px; border-top: 5px solid #27ae60;">
+        
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="color: #001f3f; margin: 0; font-weight: 800; letter-spacing: 1px;">JOIN THE MARKET</h2>
+            <p style="color: #95a5a6; font-size: 0.85em; margin-top: 5px;">Register your profile</p>
+        </div>
+
+        <form method="post" style="display: flex; flex-direction: column; gap: 15px;">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div style="position: relative;">
+                    <label style="display: block; font-size: 0.75em; font-weight: 700; color: #001f3f; margin-bottom: 5px; text-transform: uppercase;">
+                        {{ field.label }}
+                    </label>
+                    <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" id="id_{{ field.name }}" required style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; outline: none;">
+                    
+                    {% if "password" in field.name %}
+                        <i class="fa-solid fa-eye toggle-reg-pass" data-target="id_{{ field.name }}" style="position: absolute; right: 12px; top: 32px; cursor: pointer; color: #7f8c8d;"></i>
+                    {% endif %}
+
+                    {% for error in field.errors %}
+                        <p style="color: #e74c3c; font-size: 0.75em; margin: 5px 0;">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" style="background: #27ae60; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 1em; margin-top: 10px; transition: 0.3s;">
+                Create Account
+            </button>
+        </form>
+
+        <div style="margin-top: 20px; position: relative; text-align: center;">
+            <span style="background: white; padding: 0 10px; color: #95a5a6; font-size: 0.8em; position: relative; z-index: 1;">OR</span>
+            <div style="position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: #eee; z-index: 0;"></div>
+        </div>
+
+        <a href="{% provider_login_url 'google' %}" style="display: flex; align-items: center; justify-content: center; gap: 12px; background: white; border: 1px solid #001f3f; padding: 12px; border-radius: 8px; text-decoration: none; color: #001f3f; font-weight: bold; margin-top: 20px;">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" alt="Google Logo" style="width: 20px; height: 20px;">
+            <span>Continue with Google</span>
+        </a>
+
+        <div style="margin-top: 30px; text-align: center; border-top: 1px solid #f1f2f6; padding-top: 20px;">
+            <p style="font-size: 0.9em; color: #7f8c8d;">
+                Already have an account? <a href="{% url 'login' %}" style="color: #001f3f; text-decoration: none; font-weight: 700;">Login Here</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.toggle-reg-pass').forEach(item => {
+        item.addEventListener('click', function() {
+            const targetId = this.getAttribute('data-target');
+            const field = document.getElementById(targetId);
+            const type = field.getAttribute('type') === 'password' ? 'text' : 'password';
+            field.setAttribute('type', type);
+            this.classList.toggle('fa-eye-slash');
+        });
+    });
+</script>

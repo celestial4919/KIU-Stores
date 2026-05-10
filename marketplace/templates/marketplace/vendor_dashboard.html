@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div style="max-width: 1200px; margin: 30px auto; padding: 0 20px; font-family: 'Poppins', sans-serif;">
+    
+    <!-- Header Section -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h1 style="color: #001f3f; margin: 0;">{{ user.store_name }} Dashboard</h1>
+            <p style="color: #666;">Welcome back to the Forge, {{ user.username }}</p>
+        </div>
+        <a href="{% url 'add_product' %}" style="background: #27ae60; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+            + Add New Product
+        </a>
+    </div>
+
+    <!-- Stats Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px;">
+        
+        <!-- Balance Card -->
+        <div style="background: white; padding: 25px; border-radius: 15px; border-left: 5px solid #27ae60; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <h4 style="color: #888; margin: 0; font-size: 0.9rem; text-transform: uppercase;">Celestial Balance</h4>
+            <h2 style="color: #001f3f; margin: 10px 0;">UGX {{ total_earnings }}</h2>
+            
+            <!-- Progress toward 10k -->
+            <!-- Set the progress as a CSS variable -->
+            <div style="background: #eee; height: 8px; border-radius: 10px;">
+                <div style="background: #27ae60; height: 100%; border-radius: 10px; width: calc({{ progress }} * 1%);"></div>
+            </div>
+            <p style="font-size: 0.8rem; color: #666;">
+                {% if is_eligible %}
+                    Ready for withdrawal!
+                {% else %}
+                    UGX {{ threshold|add:"-total_earnings" }} more until withdrawal
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Orders Card -->
+        <div style="background: white; padding: 25px; border-radius: 15px; border-left: 5px solid #001f3f; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+            <h4 style="color: #888; margin: 0; font-size: 0.9rem; text-transform: uppercase;">Active Orders</h4>
+            <h2 style="color: #001f3f; margin: 10px 0;">0</h2>
+            <p style="font-size: 0.8rem; color: #666;">Pending OTP confirmation</p>
+        </div>
+
+    
+
+    <div style="background: white; padding: 25px; border-radius: 15px; border-left: 5px solid #ffc107; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <h4 style="color: #888; margin: 0; font-size: 0.9rem; text-transform: uppercase;">Campus Reach</h4>
+        <h2 style="color: #001f3f; margin: 10px 0;">{{ request.user.followers.count }}</h2>
+        <p style="font-size: 0.8rem; color: #666;">Total store followers</p>
+    </div>
+
+    
+
+    </div>
+    </div>
+
+    <!-- Inventory Table -->
+    <div style="background: white; border-radius: 15px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <h3 style="margin-bottom: 20px; color: #001f3f;">Your Inventory</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="text-align: left; border-bottom: 2px solid #eee;">
+                    <th style="padding: 15px 10px;">Product</th>
+                    <th style="padding: 15px 10px;">Price (Your Share)</th>
+                    <th style="padding: 15px 10px;">Status</th>
+                    <th style="padding: 15px 10px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr style="border-bottom: 1px solid #f9f9f9;">
+                    <td style="padding: 15px 10px; font-weight: 600;">{{ product.title }}</td>
+                    <td style="padding: 15px 10px;">UGX {{ product.original_price|floatformat:0 }}</td>
+                    <td style="padding: 15px 10px;">
+                        <span style="background: #e8f5e9; color: #2e7d32; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem;">Live</span>
+                    </td>
+                    <td style="padding: 15px 10px;">
+    <!-- EDIT LINK -->
+                        <a href="{% url 'edit_product' product.id %}" style="color: #001f3f; margin-right: 15px; text-decoration: none; font-weight: 600;">
+                        <i class="fa-solid fa-pen-to-square"></i> Edit
+                        </a>
+
+    <!-- DELETE FORM -->
+                        <form action="{% url 'delete_product' product.id %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" 
+                        onclick="return confirm('Are you sure you want to delete this product?')" 
+                        style="background: none; border: none; color: #e74c3c; padding: 0; cursor: pointer; font-family: inherit; font-size: inherit; font-weight: 600;">
+                        <i class="fa-solid fa-trash-can"></i> Delete
+                        </button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 40px; color: #999;">No products listed yet. Start selling!</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

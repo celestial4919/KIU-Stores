@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width: 800px; margin: 40px auto; background: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden;">
+    
+    <!-- Tab Navigation -->
+    <div style="display: flex; background: #f8f9fa; border-bottom: 1px solid #eee;">
+        <button onclick="openTab(event, 'Account')" class="tablinks active" style="flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: 600; background: none; border-bottom: 3px solid #001f3f;">Account</button>
+        {% if user.is_student_seller or user.is_official_store %}
+        <button onclick="openTab(event, 'Business')" class="tablinks" style="flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: 600; background: none;">Business</button>
+        {% endif %}
+        <button onclick="openTab(event, 'Technical')" class="tablinks" style="flex: 1; padding: 15px; border: none; cursor: pointer; font-weight: 600; background: none;">Technical</button>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data" style="padding: 30px;">
+        {% csrf_token %}
+
+        <!-- Tab 1: Account -->
+        <div id="Account" class="tabcontent">
+            <h3 style="margin-bottom: 20px; color: #001f3f;">Personal Details</h3>
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Phone Number (MTN/Airtel)</label>
+            <input type="text" name="phone_number" value="{{ user.phone_number|default:'' }}" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px;">
+            
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Primary Delivery Point (Hostel/Room)</label>
+            <input type="text" name="location" value="{{ user.location|default:'' }}" placeholder="e.g. Basajja Room 12" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+        </div>
+
+        <!-- Tab 2: Business (Vendor Only) -->
+        <div id="Business" class="tabcontent" style="display:none;">
+            <h3 style="margin-bottom: 20px; color: #001f3f;">Store Identity</h3>
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Store Name</label>
+            <input type="text" name="store_name" value="{{ user.store_name|default:'' }}" style="width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px;">
+            
+            <label style="display: block; margin-bottom: 8px; font-weight: 600;">Store Bio</label>
+            <textarea name="bio" rows="3" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">{{ user.bio|default:'' }}</textarea>
+        </div>
+
+        <!-- Tab 3: Technical -->
+        <div id="Technical" class="tabcontent" style="display:none;">
+            <h3 style="margin-bottom: 20px; color: #001f3f;">Platform Preferences</h3>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                <span>Data Saver (Lower image quality)</span>
+                <input type="checkbox" name="data_saver" {% if user.data_saver %}checked{% endif %}>
+            </div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                <span>Invisible Mode (Hide my store temporarily)</span>
+                <input type="checkbox" name="is_invisible" {% if user.is_invisible %}checked{% endif %}>
+            </div>
+            {% comment "Deactivated until post-launch" %}
+            <!-- Dark Mode Toggle -->
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; padding: 10px; border-bottom: 1px solid #eee;">
+        <div>
+            <span style="display: block; font-weight: 600;">Dark Mode</span>
+            <small style="color: #777;">Easier on the eyes for late-night study sessions.</small>
+        </div>
+        <input type="checkbox" name="dark_mode" {% if user.dark_mode %}checked{% endif %} style="width: 20px; height: 20px; cursor: pointer;">
+    </div>
+    {% endcomment %}
+        </div>
+
+        <button type="submit" style="width: 100%; margin-top: 30px; background: #001f3f; color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 700; cursor: pointer;">SAVE ALL SETTINGS</button>
+    </form>
+</div>
+
+<script>
+function openTab(evt, tabName) {
+  var i, tabcontent, tablinks;
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) { tabcontent[i].style.display = "none"; }
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].style.borderBottom = "none";
+    tablinks[i].style.color = "#333";
+  }
+  document.getElementById(tabName).style.display = "block";
+  evt.currentTarget.style.borderBottom = "3px solid #001f3f";
+  evt.currentTarget.style.color = "#001f3f";
+}
+</script>
+{% endblock %}
