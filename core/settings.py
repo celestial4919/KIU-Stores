@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
 
 
-ALLOWED_HOSTS = ['kiu-stores.onrender.com', , 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['kiu-stores.onrender.com', 'localhost', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['https://kiu-stores.onrender.com']
 
 
@@ -96,6 +96,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+# Use Render's PostgreSQL if DATABASE_URL exists, otherwise use SQLite
+if os.environ.get('DATABASE_URL'):
+    DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
 
 # Password validation
@@ -136,7 +139,7 @@ STATIC_URL = 'static/'
 AUTH_USER_MODEL = 'marketplace.User'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-STATIC_ROOT = STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
