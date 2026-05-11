@@ -178,3 +178,11 @@ ACCOUNT_LOGIN_METHODS = {'username', 'email'}
 WHITENOISE_USE_FINDERS = True
 WHITENOISE_MANIFEST_STRICT = False
 WHITENOISE_AUTOREFRESH = True
+
+# Temporary fix for Site ID in production
+from django.db.models.signals import post_migrate
+def fix_site_id(sender, **kwargs):
+    from django.contrib.sites.models import Site
+    Site.objects.get_or_create(id=1, defaults={'domain': 'kiu-stores.onrender.com', 'name': 'KIU Stores'})
+
+post_migrate.connect(fix_site_id)
