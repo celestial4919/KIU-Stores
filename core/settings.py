@@ -136,7 +136,7 @@ STATIC_URL = 'static/'
 AUTH_USER_MODEL = 'marketplace.User'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-STATIC_ROOT = STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles'
+STATIC_ROOT = STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
