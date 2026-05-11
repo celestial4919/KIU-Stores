@@ -29,9 +29,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
 
 
-ALLOWED_HOSTS = ['localhost',
-    '127.0.0.1',
-    'kui-stores.onrender.com']
+ALLOWED_HOSTS = ['kiu-stores.onrender.com']
 CSRF_TRUSTED_ORIGINS = ['https://kiu-stores.onrender.com']
 
 
