@@ -26,10 +26,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['kiu-stores.onrender.com', 'localhost', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['https://kiu-stores.onrender.com']
 
 
@@ -179,10 +179,3 @@ WHITENOISE_USE_FINDERS = True
 WHITENOISE_MANIFEST_STRICT = False
 WHITENOISE_AUTOREFRESH = True
 
-# Temporary fix for Site ID in production
-from django.db.models.signals import post_migrate
-def fix_site_id(sender, **kwargs):
-    from django.contrib.sites.models import Site
-    Site.objects.get_or_create(id=1, defaults={'domain': 'kiu-stores.onrender.com', 'name': 'KIU Stores'})
-
-post_migrate.connect(fix_site_id)
