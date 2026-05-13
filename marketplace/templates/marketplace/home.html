@@ -10,7 +10,7 @@
     </div>
     <hr style="border: 0; height: 1px; background: #eee; margin: 10px 0;">
     
-    <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; width: 100%;">
+    <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 193px)); gap: 10px; width: 100%;">
     
         {% for product in products %}
             <div class="compact-card" style="background: white; border: 1px solid #eee; border-radius: 8px; overflow: hidden; transition: all 0.3s ease; display: flex; flex-direction: column;">
@@ -53,26 +53,29 @@
                 
                 <div style="padding: 8px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
                     <div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; gap: 5px;">
-    <div class="badge">
-    {% if product.vendor.is_official_store %}
-    <a href="{% url 'store_detail' product.vendor.id %}" style="text-decoration: none;">
-        <span style="background: #fff8e1; border: 1px solid #ffc107; padding: 2px 8px; border-radius: 4px; color: #b7791f; font-size: 0.65em; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%;">
-            🏢 {{ product.vendor.store_name|truncatechars:25 }}
-        </span>
-    </a>
-    {% elif product.vendor.is_student_seller %}
-    <a href="{% url 'store_detail' product.vendor.id %}" style="text-decoration: none;">
-        <span style="background: #e8f5e9; border: 1px solid #4caf50; padding: 2px 8px; border-radius: 4px; color: #2e7d32; font-size: 0.65em; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%;">
-            🧑‍🎓 {{ product.vendor.store_name|default:product.vendor.username|truncatechars:25 }}
-        </span>
-    </a>    
-    {% endif %}
+    <div style="display: flex; align-items: center; margin-bottom: 8px; gap: 5px; width: 100%;">
+    
+    <!-- Badge: fills all space except cart -->
+    <div style="width: calc(100% - 30px); overflow: hidden;">
+        {% if product.vendor.is_official_store %}
+        <a href="{% url 'store_detail' product.vendor.id %}" style="text-decoration: none; display: block;">
+            <span style="background: #fff8e1; border: 1px solid #ffc107; padding: 2px 6px; border-radius: 4px; color: #b7791f; font-size: 0.65em; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%;">
+                🏢 {{ product.vendor.store_name }}
+            </span>
+        </a>
+        {% elif product.vendor.is_student_seller %}
+        <a href="{% url 'store_detail' product.vendor.id %}" style="text-decoration: none; display: block;">
+            <span style="background: #e8f5e9; border: 1px solid #4caf50; padding: 2px 6px; border-radius: 4px; color: #2e7d32; font-size: 0.65em; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%;">
+                🧑‍🎓 {{ product.vendor.store_name|default:product.vendor.username }}
+            </span>
+        </a>
+        {% endif %}
     </div>
 
+    <!-- Cart icon: always exactly 25px -->
     <a href="{% url 'add_to_cart' product.id %}" 
        class="ghost-add-btn"
-       style="color: #001f3f; text-decoration: none; flex-shrink: 0; transition: all 0.2s ease;">
+       style="width: 25px; flex-shrink: 0; color: #001f3f; text-decoration: none; text-align: center; transition: all 0.2s ease;">
         <i class="fa-solid fa-cart-plus" style="font-size: 1.1rem;"></i>
     </a>
 </div>
