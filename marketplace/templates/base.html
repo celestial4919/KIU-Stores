@@ -66,13 +66,13 @@
         }
 
         /* 5. SECOND ROW - Pulled up higher */
-        .search-area { 
-            width: 100%; 
+        .search-area {
+            width: 100%;
             display: flex;
-            justify-content: space-between; 
+            justify-content: space-between;
             align-items: center;
             margin-top: 2px; /* Pulls second row closer to first */
-            margin-bottom: 5px; 
+            margin-bottom: 5px;
         }
 
         .slogan {
@@ -101,7 +101,7 @@
             background: var(--input-bg);
             border: 1px solid var(--border-color);
         }
-        
+
         .search-form:focus-within {
             border-color: #001f3f;
             box-shadow: 0 0 5px rgba(0, 31, 63, 0.1);
@@ -147,7 +147,7 @@
         gap: 10px !important;
         padding: 10px !important;
     }
-    
+
     .compact-card {
         padding: 8px !important; /* Tightens padding so they fit perfectly */
     }
@@ -162,7 +162,7 @@
     /* The Wrapper that sticks to the top */
     .sticky-nav-wrapper {
     position: sticky;
-    top: 60px; 
+    top: 60px;
     z-index: 999;
     background: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(12px);
@@ -262,24 +262,24 @@
     #accountDropdown {
     display: none;
     position: absolute;
-    top: 75px; 
+    top: 75px;
     right: 5%;
     width: 240px;
-    background: #ffffff; 
+    background: #ffffff;
     border: 1px solid #e0e0e0;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     z-index: 1001;
     padding: 20px;
     color: #333333;
-    background: var(--dropdown-bg); 
+    background: var(--dropdown-bg);
     border: 1px solid var(--border-color);
     color: var(--text-main);
-    
+
     /* Center the contents of the dropdown container */
     display: none;
     flex-direction: column;
-    align-items: center; 
+    align-items: center;
     text-align: center;
 }
 
@@ -375,13 +375,13 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            background: var(--bg-main); 
-            font-family: 'Poppins', sans-serif; 
-            color: var(--text-main); 
+
+        body {
+            background: var(--bg-main);
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-main);
             overflow-x: hidden;
-            transition: background 0.3s ease, color 0.3s ease; 
+            transition: background 0.3s ease, color 0.3s ease;
         }
 
         /* 2. THE MAIN HEADER - Linked to variables */
@@ -424,9 +424,11 @@
         <div class="brand-section">
             <h1 class="brand-name">KIU<span class="brand-suffix">Stores</span></h1>
         </div>
-        
+
         <div class="central-void">
+            <a href="{% url 'cart' %}">
             <i class="fa-solid fa-cart-shopping void-cart"></i>
+            </a>
         </div>
 
         <div class="right-section">
@@ -437,18 +439,18 @@
 
         <div class="search-area">
             <div class="slogan slogan-left">Your campus marketplace</div>
-            
+
             <form action="{% url 'search' %}" method="GET" class="search-form">
                 <input type="text" name="q" placeholder="Search products..." aria-label="Search">
                 <button type="submit"><i class="fa-solid fa-magnifying-glass"></i></button>
             </form>
 
-        
+
 
             <div class="slogan slogan-right">Need it, get it</div>
-        
+
             <div class="user-identity-trigger" onclick="toggleAccountMenu()" style="width: 32px; height: 32px; border-radius: 50%; background: #001f3f; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid #ddd; overflow: hidden;">
-            
+
                 {% if user.is_authenticated %}
                 {% if user.socialaccount_set.all.0.get_avatar_url %}
             <img src="{{ user.socialaccount_set.all.0.get_avatar_url }}" alt="Me" style="width: 100%; height: 100%; object-fit: cover;">
@@ -473,19 +475,20 @@
             </p>
             <p style="font-size: 0.8rem; color: #777; word-break: break-all;">{{ user.email }}</p>
         </div>
-        
+
         <div style="width: 100%; height: 1px; background: #eee; margin-bottom: 10px;"></div>
-        
+
         <ul style="width: 100%; list-style: none; padding: 0;">
             <!-- VERSION 1: VENDOR DROPDOWN (Seller or Official Store) -->
             {% if user.is_student_seller or user.is_official_store %}
                 <li class="menu-item"><a href="{% url 'profile' %}"><i class="fa-solid fa-circle-user"></i> Profile</a></li>
+                <li class="menu-item"><a href="{% url 'track_transactions' %}"><i class="fa-solid fa-truck-fast"></i> Track Transaction</a></li>
                 <li class="menu-item"><a href="{% url 'add_product' %}"><i class="fa-solid fa-plus-circle"></i> Add Product</a></li>
                 <li class="menu-item"><a href="{% url 'my_store_profile' %}"><i class="fa-solid fa-store"></i> My Store</a></li>
                 <li class="menu-item">
     <a href="{% url 'inbox' %}" style="display: flex; justify-content: space-between; align-items: center;">
         <span><i class="fa-solid fa-envelope"></i> My Inbox</span>
-        
+
         {% if unread_count > 0 %}
             <span style="background: #e74c3c; color: white; border-radius: 50%; padding: 2px 7px; font-size: 0.7rem; font-weight: bold; animation: pulse 2s infinite;">
                 {{ unread_count }}
@@ -518,7 +521,7 @@
                 <li class="menu-item">
     <a href="{% url 'inbox' %}" style="display: flex; justify-content: space-between; align-items: center;">
         <span><i class="fa-solid fa-envelope"></i> My Inbox</span>
-        
+
         {% if unread_count > 0 %}
             <span style="background: #e74c3c; color: white; border-radius: 50%; padding: 2px 7px; font-size: 0.7rem; font-weight: bold; animation: pulse 2s infinite;">
                 {{ unread_count }}
@@ -535,7 +538,7 @@
 }
 </style>
                 <li class="menu-item"><a href="{% url 'followed_stores' %}"><i class="fa-solid fa-star" style="color: #ffc107;"></i> Followed Stores</a></li>
-                <li class="menu-item"><a href="#"><i class="fa-solid fa-truck-fast"></i> Track Transaction</a></li>
+                <li class="menu-item"><a href="{% url 'track_transactions' %}"><i class="fa-solid fa-truck-fast"></i> Track Transaction</a></li>
                 <li class="menu-item"><a href="{% url 'become_vendor' %}"><i class="fa-solid fa-shop"></i> Become a Vendor</a></li>
                 <li class="menu-item"><a href="{% url 'settings_page' %}"><i class="fa-solid fa-sliders"></i> Settings</a></li>
                 {% if not user.is_official_store %}
@@ -586,7 +589,7 @@
         }
     }
 
-    
+
     document.addEventListener("DOMContentLoaded", function() {
         const cookiePopup = document.getElementById('cookie-popup');
         const acceptBtn = document.getElementById('accept-cookies');
@@ -627,7 +630,7 @@
         <a href="?category=deals" class="pill deals {% if active_category == 'deals' %}active{% endif %}">
         <i class="fa-solid fa-fire" style="margin-right: 5px; font-size: 0.85rem;"></i> Deals
         </a>
-        
+
     <!-- Inside your <div class="pill-container"> -->
 <a href="{% url 'cart' %}" class="pill pill-cart {% if active_category == 'cart' %}active{% endif %}" style="position: relative; margin-left: auto;">
     <i class="fa-solid fa-cart-shopping"></i> Cart
@@ -656,21 +659,21 @@
     <footer style="text-align: center; padding: 40px 20px; color: #999; font-size: 0.8em; line-height: 1.6;">
     <div style="max-width: 700px; margin: 0 auto 25px auto; color: #888;">
         <p>
-            KIU STORES is the premier digital ecosystem for the Kampala International University community. 
-            We provide a secure, escrow-backed platform for students to trade with confidence, 
+            KIU STORES is the premier digital ecosystem for the Kampala International University community.
+            We provide a secure, escrow-backed platform for students to trade with confidence,
             bridging the gap between affordability and security.
         </p>
     </div>
 
     <div style="margin-bottom: 15px;">
-        <a href="/" style="color: #999; text-decoration: none;">Home</a> | 
-        <a href="{% url 'home' %}?category=electronics" style="color: #999; text-decoration: none;">Electronics</a> | 
-        <a href="{% url 'home' %}?category=fashion" style="color: #999; text-decoration: none;">Fashion</a> | 
+        <a href="/" style="color: #999; text-decoration: none;">Home</a> |
+        <a href="{% url 'home' %}?category=electronics" style="color: #999; text-decoration: none;">Electronics</a> |
+        <a href="{% url 'home' %}?category=fashion" style="color: #999; text-decoration: none;">Fashion</a> |
         <a href="{% url 'home' %}?category=second_hand" style="color: #999; text-decoration: none;">Campus Thrift</a>
     </div>
 
     <div style="margin-bottom: 25px;">
-        <a href="{% url 'about' %}" style="color: #999; text-decoration: none; margin: 0 5px;">About Us</a> | 
+        <a href="{% url 'about' %}" style="color: #999; text-decoration: none; margin: 0 5px;">About Us</a> |
         <a href="{% url 'contact' %}" style="color: #999; text-decoration: none; margin: 0 5px;">Contact Us</a> |
         <a href="{% url 'privacy_policy' %}" style="color: #27ae60; text-decoration: none; font-weight: 600; margin: 0 5px;">Privacy Policy</a>
     </div>

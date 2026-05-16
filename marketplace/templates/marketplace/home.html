@@ -1,161 +1,390 @@
-{% extends 'base.html' %}
-
-{% block content %}
-<div style="margin-top: 15px;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+{% extends 'base.html' %} {% block content %}
+<div style="margin-top: 15px">
+    <div
+        style="
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        "
+    >
         <div>
-            <h2 style="color: #2c3e50; font-weight: 700; margin-bottom: 2px;">Featured Items</h2>
-            <p style="color: #7f8c8d; font-size: 0.85rem;">Premium Campus Marketplace by Celestial Forge</p>
+            <h2 style="color: #2c3e50; font-weight: 700; margin-bottom: 2px">
+                Featured Items
+            </h2>
+            <p style="color: #7f8c8d; font-size: 0.85rem">
+                Premium Campus Marketplace by Celestial Forge
+            </p>
         </div>
     </div>
-    <hr style="border: 0; height: 1px; background: #eee; margin: 10px 0;">
-    
-    <div class="product-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 193px)); gap: 10px; width: 100%;">
-    
+    <hr style="border: 0; height: 1px; background: #eee; margin: 10px 0" />
+
+    <div
+        class="product-grid"
+        style="
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 193px));
+            gap: 10px;
+            width: 100%;
+        "
+    >
         {% for product in products %}
-            <div class="compact-card" style="background: white; border: 1px solid #eee; border-radius: 8px; overflow: hidden; transition: all 0.3s ease; display: flex; flex-direction: column;">
-                
-                <div style="height: 140px; overflow: hidden; background: #fdfdfd; padding: 5px;">
-                    {% if request.user.is_authenticated and request.user != product.vendor %}
-    <div style="position: relative; width: 0; height: 0; float: right; z-index: 5;"> <a href="{% url 'toggle_follow' product.vendor.id %}" 
-           style="position: absolute; 
-                  top: 10px; 
-                  right: 10px; 
-                  display: flex !important; 
-                  align-items: center;
-                  justify-content: center;
-                  visibility: visible !important; 
-                  opacity: 1 !important;
-                  background: transparent; /* Removed the grayish circle */
-                  width: 24px;
-                  height: 24px;
-                  text-decoration: none !important;">
-            
-            {% if product.vendor in request.user.following.all %}
-                <i class="fa-solid fa-star" style="color: #ffc107 !important; font-size: 1rem !important;"></i>
-            {% else %}
-                <i class="fa-regular fa-star" style="color: #b2bec3 !important; font-size: 1rem !important;"></i>
-            {% endif %}
-        </a>
-    </div>
-{% endif %}
-
-<div style="height: 140px; overflow: hidden; background: #fdfdfd; padding: 5px; clear: both; position: relative; z-index: 1;">
-    {% if product.image %}
-        <img src="{{ product.image.url }}" style="width: 100%; height: 100%; object-fit: contain;">
-    {% else %}
-        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #eee;">
-            <i class="fa-solid fa-image fa-2xl"></i>
-        </div>
-    {% endif %}
-</div>
+        <div
+            class="compact-card"
+            style="
+                background: white;
+                border: 1px solid #eee;
+                border-radius: 8px;
+                overflow: hidden;
+                transition: all 0.3s ease;
+                display: flex;
+                flex-direction: column;
+            "
+        >
+            <div
+                style="
+                    height: 140px;
+                    overflow: hidden;
+                    background: #fdfdfd;
+                    padding: 5px;
+                "
+            >
+                {% if request.user.is_authenticated and request.user != product.vendor %}
+                <div
+                    style="
+                        position: relative;
+                        width: 0;
+                        height: 0;
+                        float: right;
+                        z-index: 5;
+                    "
+                >
+                    <a
+                        href="{% url 'toggle_follow' product.vendor.id %}"
+                        style="
+                            position: absolute;
+                            top: 10px;
+                            right: 10px;
+                            display: flex !important;
+                            align-items: center;
+                            justify-content: center;
+                            visibility: visible !important;
+                            opacity: 1 !important;
+                            background: transparent; /* Removed the grayish circle */
+                            width: 24px;
+                            height: 24px;
+                            text-decoration: none !important;
+                        "
+                    >
+                        {% if product.vendor in request.user.following.all %}
+                        <i
+                            class="fa-solid fa-star"
+                            style="
+                                color: #ffc107 !important;
+                                font-size: 1rem !important;
+                            "
+                        ></i>
+                        {% else %}
+                        <i
+                            class="fa-regular fa-star"
+                            style="
+                                color: #b2bec3 !important;
+                                font-size: 1rem !important;
+                            "
+                        ></i>
+                        {% endif %}
+                    </a>
                 </div>
-                
-                <div style="padding: 8px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
-                    <div>
-    <div style="display: flex; align-items: center; margin-bottom: 8px; gap: 5px; width: 100%;">
-    
-    <!-- Badge: fills all space except cart -->
-    <div style="width: calc(100% - 30px); overflow: hidden;">
-        {% if product.vendor.is_official_store %}
-        <a href="{% url 'store_detail' product.vendor.id %}" style="text-decoration: none; display: block;">
-            <span style="background: #fff8e1; border: 1px solid #ffc107; padding: 2px 6px; border-radius: 4px; color: #b7791f; font-size: 0.65em; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%;">
-                🏢 {{ product.vendor.store_name }}
-            </span>
-        </a>
-        {% elif product.vendor.is_student_seller %}
-        <a href="{% url 'store_detail' product.vendor.id %}" style="text-decoration: none; display: block;">
-            <span style="background: #e8f5e9; border: 1px solid #4caf50; padding: 2px 6px; border-radius: 4px; color: #2e7d32; font-size: 0.65em; font-weight: bold; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; width: 100%;">
-                🧑‍🎓 {{ product.vendor.store_name|default:product.vendor.username }}
-            </span>
-        </a>
-        {% endif %}
-    </div>
+                {% endif %}
 
-    <!-- Cart icon: always exactly 25px -->
-    <a href="{% url 'add_to_cart' product.id %}" 
-       class="ghost-add-btn"
-       style="width: 25px; flex-shrink: 0; color: #001f3f; text-decoration: none; text-align: center; transition: all 0.2s ease;">
-        <i class="fa-solid fa-cart-plus" style="font-size: 1.1rem;"></i>
-    </a>
-</div>
-                        
+                <div
+                    style="
+                        height: 140px;
+                        overflow: hidden;
+                        background: #fdfdfd;
+                        padding: 5px;
+                        clear: both;
+                        position: relative;
+                        z-index: 1;
+                    "
+                >
+                    {% if product.image %}
+                    <img
+                        src="{{ product.image.url }}"
+                        style="width: 100%; height: 100%; object-fit: contain"
+                    />
+                    {% else %}
+                    <div
+                        style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            height: 100%;
+                            color: #eee;
+                        "
+                    >
+                        <i class="fa-solid fa-image fa-2xl"></i>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 5px;">
-    <h3 style="margin: 0; color: #333; font-size: 0.95rem; line-height: 1.2; height: 2.4em; overflow: hidden; font-weight: 500; flex-grow: 1;">
-        {{ product.title }}
-    </h3>
+            <div
+                style="
+                    padding: 8px;
+                    flex-grow: 1;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: space-between;
+                "
+            >
+                <div>
+                    <div
+                        style="
+                            display: flex;
+                            align-items: center;
+                            margin-bottom: 8px;
+                            gap: 5px;
+                            width: 100%;
+                        "
+                    >
+                        <!-- Badge: fills all space except cart -->
+                        <div style="width: calc(100% - 30px); overflow: hidden">
+                            {% if product.vendor.is_official_store %}
+                            <a
+                                href="{% url 'store_detail' product.vendor.id %}"
+                                style="text-decoration: none; display: block"
+                            >
+                                <span
+                                    style="
+                                        background: #fff8e1;
+                                        border: 1px solid #ffc107;
+                                        padding: 2px 6px;
+                                        border-radius: 4px;
+                                        color: #b7791f;
+                                        font-size: 0.65em;
+                                        font-weight: bold;
+                                        text-transform: uppercase;
+                                        white-space: nowrap;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                        display: block;
+                                        width: 100%;
+                                    "
+                                >
+                                    🏢 {{ product.vendor.store_name }}
+                                </span>
+                            </a>
+                            {% elif product.vendor.is_student_seller %}
+                            <a
+                                href="{% url 'store_detail' product.vendor.id %}"
+                                style="text-decoration: none; display: block"
+                            >
+                                <span
+                                    style="
+                                        background: #e8f5e9;
+                                        border: 1px solid #4caf50;
+                                        padding: 2px 6px;
+                                        border-radius: 4px;
+                                        color: #2e7d32;
+                                        font-size: 0.65em;
+                                        font-weight: bold;
+                                        text-transform: uppercase;
+                                        white-space: nowrap;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                        display: block;
+                                        width: 100%;
+                                    "
+                                >
+                                    🧑‍🎓 {{ product.vendor.store_name|default:product.vendor.username }}
+                                </span>
+                            </a>
+                            {% endif %}
+                        </div>
 
-    {% if product.category.slug == 'second_hand' %}
-        <div title="Campus Thrift" style="color: #27ae60; padding-top: 2px;">
-            <i class="fa-solid fa-leaf" style="font-size: 0.85rem;"></i>
-        </div>
-    {% endif %}
-</div>
-
-<p style="color: #27ae60; font-weight: 700; font-size: 1.1rem; margin: 4px 0;">
-    USh {{ product.price|floatformat:0 }}
-</p>
-                        
+                        <!-- Cart icon: always exactly 25px -->
+                        <a
+                            href="{% url 'add_to_cart' product.id %}"
+                            class="ghost-add-btn"
+                            style="
+                                width: 25px;
+                                flex-shrink: 0;
+                                color: #001f3f;
+                                text-decoration: none;
+                                text-align: center;
+                                transition: all 0.2s ease;
+                            "
+                        >
+                            <i
+                                class="fa-solid fa-cart-plus"
+                                style="font-size: 1.1rem"
+                            ></i>
+                        </a>
                     </div>
 
-    
-                    
-                    <a href="{% url 'product_detail' product.id %}" style="text-decoration: none; margin-top: auto;">
-                        <button style="width: 100%; background: #f0f2f2; color: #111; border: 1px solid #d5d9d9; padding: 4px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 500; transition: background 0.2s;">
-                            View Details
+                    <div
+                        style="
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: flex-start;
+                            gap: 5px;
+                        "
+                    >
+                        <h3
+                            style="
+                                margin: 0;
+                                color: #333;
+                                font-size: 0.95rem;
+                                line-height: 1.2;
+                                height: 2.4em;
+                                overflow: hidden;
+                                font-weight: 500;
+                                flex-grow: 1;
+                            "
+                        >
+                            {{ product.title }}
+                        </h3>
+
+                        {% if product.category.slug == 'second_hand' %}
+                        <div
+                            title="Campus Thrift"
+                            style="color: #27ae60; padding-top: 2px"
+                        >
+                            <i
+                                class="fa-solid fa-leaf"
+                                style="font-size: 0.85rem"
+                            ></i>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <p
+                        style="
+                            color: #27ae60;
+                            font-weight: 700;
+                            font-size: 1.1rem;
+                            margin: 4px 0;
+                        "
+                    >
+                        USh {{ product.price|floatformat:0 }}
+                    </p>
+                </div>
+
+                <div
+                    style="
+                        display: flex;
+                        gap: 5px;
+                        padding: 5px 8px 10px 8px;
+                        border-top: 1px solid #f9f9f9;
+                    "
+                >
+                    <a
+                        href="{% url 'product_detail' product.id %}"
+                        style="text-decoration: none; margin-top: auto"
+                    >
+                        <button
+                            style="
+                                width: 100%;
+                                background: #f0f2f2;
+                                color: #111;
+                                border: 1px solid #d5d9d9;
+                                padding: 4px;
+                                border-radius: 4px;
+                                cursor: pointer;
+                                font-size: 0.8rem;
+                                font-weight: 500;
+                                transition: background 0.2s;
+                            "
+                        >
+                            Details
+                        </button>
+                    </a>
+                    <a
+                        href="{% url 'direct_purchase' product.id %}"
+                        style="text-decoration: none; flex: 1.2;"
+                    >
+                        <button
+                            style="
+                                width: 100%;
+                                background: #001f3f;
+                                color: white;
+                                border: none;
+                                padding: 5px;
+                                border-radius: 4px;
+                                font-weight: 700;
+                                font-size: 0.75rem;
+                                cursor: pointer;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                gap: 4px;
+                            "
+                        >
+                            <i
+                                class="fa-solid fa-bolt"
+                                style="color: #ffcc00; font-size: 0.65rem"
+                            ></i>
+                            BUY
                         </button>
                     </a>
                 </div>
             </div>
-        
+        </div>
+
         {% empty %}
-            <p style="text-align: center; grid-column: 1 / -1; padding: 50px; color: #7f8c8d;">No items found.</p>
+        <p
+            style="
+                text-align: center;
+                grid-column: 1 / -1;
+                padding: 50px;
+                color: #7f8c8d;
+            "
+        >
+            No items found.
+        </p>
         {% endfor %}
-        
     </div>
 </div>
-
 
 <style>
     /* Premium Hover Effect */
     .compact-card:hover {
         border-color: #001f3f !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         transform: translateY(-3px);
     }
-    
+
     .compact-card button:hover {
         background-color: #e7e9e9 !important;
         border-color: #adb1b1 !important;
     }
 
     .mini-add-btn:hover {
-    background: #27ae60 !important; /* Turns Celestial Green on hover */
-    transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
-}
+        background: #27ae60 !important; /* Turns Celestial Green on hover */
+        transform: scale(1.1);
+        box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
+    }
 
-.ghost-add-btn:hover {
-    color: #27ae60 !important; /* Changes to Celestial Green on hover */
-    transform: scale(1.2);
-}
+    .ghost-add-btn:hover {
+        color: #27ae60 !important; /* Changes to Celestial Green on hover */
+        transform: scale(1.2);
+    }
 
-.ghost-add-btn:active {
-    transform: scale(0.9);
-}
+    .ghost-add-btn:active {
+        transform: scale(0.9);
+    }
 
-.mini-add-btn:active {
-    transform: scale(0.9);
-}
+    .mini-add-btn:active {
+        transform: scale(0.9);
+    }
 
-.badge:hover {
-    background-color: #f0f0f0; /* Or a color that fits your theme */
-    transform: translateY(-1px);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+    .badge:hover {
+        background-color: #f0f0f0; /* Or a color that fits your theme */
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
 
-/* Force the star link and icon to stay visible regardless of parent hover */
+    /* Force the star link and icon to stay visible regardless of parent hover */
     .celestial-star-link {
         display: block !important;
         opacity: 1 !important;
@@ -165,9 +394,6 @@
         display: inline-block !important;
         opacity: 1 !important;
     }
-
 </style>
-
-
 
 {% endblock %}

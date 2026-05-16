@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div style="max-width: 900px; margin: 40px auto; padding: 0 20px; font-family: 'Poppins', sans-serif;">
+
+    <div style="margin-bottom: 30px; border-left: 5px solid #27ae60; padding-left: 15px;">
+        <h2 style="color: #001f3f; font-weight: 700; margin: 0;">Secure Checkout</h2>
+        <p style="color: #7f8c8d; font-size: 0.9rem;">Celestial Escrow Payment System</p>
+    </div>
+
+    <div class="checkout-grid">
+
+        <div class="instructions-card" style="background: white; border-radius: 15px; border: 1px solid #eee; padding: 25px;">
+            <h3 style="color: #001f3f; font-size: 1.1rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-mobile-screen-button" style="color: #27ae60;"></i>
+                Payment Instructions
+            </h3>
+
+            <div style="background: #ffcc0020; border-radius: 10px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #ffcc00;">
+                <h4 style="font-size: 0.9rem; color: #333; margin-bottom: 8px;">MTN MoMo</h4>
+                <p style="font-size: 0.85rem; margin: 0;">1. Dial <strong>*165*3#</strong></p>
+                <p style="font-size: 0.85rem; margin: 0;">2. Enter Merchant Code: <span style="background: #fff; padding: 2px 6px; border-radius: 4px; font-family: 'Roboto Mono'; font-weight: bold;">{{ mtn_merchant_code }}</span></p>
+                <p style="font-size: 0.85rem; margin: 0;">3. Amount: <strong>{{ total }} UGX</strong></p>
+            </div>
+
+            <div style="background: #ff000010; border-radius: 10px; padding: 15px; border-left: 4px solid #ff0000;">
+                <h4 style="font-size: 0.9rem; color: #333; margin-bottom: 8px;">Airtel Money</h4>
+                <p style="font-size: 0.85rem; margin: 0;">1. Dial <strong>*185*9#</strong></p>
+                <p style="font-size: 0.85rem; margin: 0;">2. Enter Merchant Code: <span style="background: #fff; padding: 2px 6px; border-radius: 4px; font-family: 'Roboto Mono'; font-weight: bold;">{{ airtel_merchant_code }}</span></p>
+                <p style="font-size: 0.85rem; margin: 0;">3. Amount: <strong>{{ total }} UGX</strong></p>
+            </div>
+        </div>
+
+        <div class="verification-card" style="background: #001f3f; border-radius: 15px; padding: 25px; color: white;">
+            <h3 style="font-size: 1.1rem; margin-bottom: 15px;">Verify Your Payment</h3>
+            <form method="POST">
+                {% csrf_token %}
+                <label style="display: block; font-size: 0.8rem; color: #bdc3c7; margin-bottom: 8px;">Enter Transaction ID from SMS</label>
+                <input type="text" name="momo_transaction_id" required
+                       placeholder="e.g. 182736455"
+                       style="width: 100%; padding: 12px; border-radius: 8px; border: none; margin-bottom: 15px; font-family: 'Roboto Mono'; color: #333;">
+
+                <button type="submit" class="confirm-btn" style="width: 100%; background: #27ae60; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s;">
+                    CONFIRM PAYMENT
+                </button>
+            </form>
+        </div>
+
+        <div class="summary-card" style="background: #fdfdfd; border: 1px solid #eee; border-radius: 15px; padding: 20px; height: fit-content;">
+            <h3 style="color: #001f3f; font-size: 1rem; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Order Summary</h3>
+
+            {% if order %}
+            <div style="display: flex; gap: 12px; margin-bottom: 15px; align-items: center;">
+                <div style="width: 50px; height: 50px; background: #eee; border-radius: 8px; overflow: hidden; flex-shrink: 0;">
+                    {% if order.product.image %}
+                        <img src="{{ order.product.image.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #eee; color: #bdc3c7;">
+                            <i class="fa-solid fa-image"></i>
+                        </div>
+                    {% endif %}
+                </div>
+                <div style="flex-grow: 1;">
+                    <p style="font-size: 0.85rem; font-weight: 600; margin: 0; color: #333;">{{ order.product.title|truncatechars:25 }}</p>
+                    <p style="font-size: 0.75rem; color: #7f8c8d; margin: 0;">Qty: {{ order.quantity|default:1 }}</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="font-size: 0.85rem; font-weight: 700; margin: 0; color: #27ae60;">{{ order.total_price }}</p>
+                </div>
+            </div>
+            {% else %}
+                {% for item in cart_items %}
+                <div style="display: flex; gap: 12px; margin-bottom: 15px; align-items: center;">
+                    <div style="width: 50px; height: 50px; background: #eee; border-radius: 8px; overflow: hidden; flex-shrink: 0;">
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: #eee; color: #bdc3c7;">
+                                <i class="fa-solid fa-image"></i>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <p style="font-size: 0.85rem; font-weight: 600; margin: 0; color: #333;">{{ item.product.title|truncatechars:25 }}</p>
+                        <p style="font-size: 0.75rem; color: #7f8c8d; margin: 0;">Qty: {{ item.quantity }}</p>
+                    </div>
+                    <div style="text-align: right;">
+                        <p style="font-size: 0.85rem; font-weight: 700; margin: 0; color: #27ae60;">{{ item.total_price }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            {% endif %}
+
+            <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 600; color: #7f8c8d;">Total Amount</span>
+                <span style="font-size: 1.2rem; font-weight: 800; color: #001f3f;">{{ total }} UGX</span>
+            </div>
+
+            <div style="margin-top: 25px; padding: 12px; background: #f9f9f9; border-radius: 8px; border-top: 2px solid #27ae60;">
+                <p style="font-size: 0.7rem; color: #7f8c8d; margin: 0; line-height: 1.4;">
+                    <i class="fa-solid fa-shield-halved" style="color: #27ae60;"></i>
+                    <strong>Celestial Protection:</strong> Money is held securely by KIU Stores and only released to the vendor after you provide the delivery OTP.
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+<a href="{% url 'home' %}" style="text-decoration: none; color: #7f8c8d; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; margin-bottom: 20px;">
+    <i class="fa-solid fa-arrow-left"></i> Back to Marketplace
+</a>
+
+
+<style>
+    /* Desktop Structural Layout mapping */
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 30px;
+    }
+
+    .instructions-card {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .verification-card {
+        grid-column: 1;
+        grid-row: 2;
+    }
+
+    .summary-card {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+    }
+
+    .confirm-btn:hover {
+        background: #219150 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);
+    }
+
+    /* Target Stacking Sequence for Mobile Displays */
+    @media (max-width: 768px) {
+        .checkout-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .instructions-card {
+            order: 1;
+        }
+        .summary-card {
+            order: 2; /* Shows item context before action triggers */
+        }
+        .verification-card {
+            order: 3; /* Final step form settles cleanly at the base */
+        }
+    }
+</style>
+{% endblock %}

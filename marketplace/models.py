@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from cloudinary.models import CloudinaryField
+from decimal import Decimal
+import random
 
 class User(AbstractUser):
     image = CloudinaryField('image', null=True, blank=True)
@@ -8,6 +10,8 @@ class User(AbstractUser):
     is_vendor = models.BooleanField(default=False)
     is_student_seller = models.BooleanField(default=False)
     is_official_store = models.BooleanField(default=False)
+    # NEW: The Virtual Wallet Ledger
+    wallet_balance = models.DecimalField(max_digits=12, decimal_places=2, default=0.00)
     # Business Identity
     store_name = models.CharField(max_length=100, blank=True, null=True)
     business_specialty = models.CharField(max_length=200, blank=True, null=True, help_text="e.g. Laptops & IT Solutions")
@@ -19,15 +23,15 @@ class User(AbstractUser):
     dark_mode = models.BooleanField(default=False)
     data_saver = models.BooleanField(default=False)
     is_invisible = models.BooleanField(default=False)
-    
+
     # Professional Links
     portfolio_url = models.URLField(blank=True, null=True, help_text="Link to Instagram or Website")
     def __str__(self):
         return self.store_name if self.store_name else self.username
-    
+
     # NEW: The Following System
     following = models.ManyToManyField('self', symmetrical=False, related_name='followers', blank=True)
-    
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True) # This is for the URL (e.g., 'electronics')
@@ -36,9 +40,8 @@ class Category(models.Model):
         return self.name
 
     class Meta:
-        verbose_name_plural = "Categories"        
+        verbose_name_plural = "Categories"
 
-from decimal import Decimal # Make sure this is at the top with other imports
 
 # ... keep User, Category etc. where they are ...
 
@@ -49,7 +52,7 @@ class Product(models.Model):
     description = models.TextField()
     image = CloudinaryField('image', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    
+
     # Pricing fields
     price = models.DecimalField(max_digits=10, decimal_places=2)
     original_price = models.DecimalField(max_digits=10, decimal_places=2, editable=False, null=True)
@@ -68,7 +71,7 @@ class Product(models.Model):
             self.original_price = self.price
 
         price_val = float(self.original_price)
-        
+
         # YOUR PRICING LOGIC
         if price_val < 50000:
             markup = 1.10  # 10%
@@ -85,32 +88,18 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.title} - USh {self.price:,.0f}"
-    
-    # ADD TO models.py
-class Order(models.Model):
-    STATUS_CHOICES = [
-        ('pending', 'Pending Payment'),
-        ('escrow', 'Held in Escrow'),
-        ('completed', 'Funds Released'),
-        ('cancelled', 'Cancelled/Refunded'),
-    ]
-    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='purchases')
-    product = models.ForeignKey(Product, on_delete=models.PROTECT)
-    amount = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-    created_at = models.DateTimeField(auto_now_add=True)
-    transaction_id = models.CharField(max_length=100, blank=True, null=True) # For Flutterwave/MTN
-    
+
+
 class CartItem(models.Model):
     # Links the item to a specific user (Bishop or any student)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cart_items')
-    
+
     # Links to the product being bought
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    
+
     # Allows students to buy more than one of the same item
     quantity = models.PositiveIntegerField(default=1)
-    
+
     # Tracks when they added it
     added_at = models.DateTimeField(auto_now_add=True)
 
@@ -132,7 +121,7 @@ class Review(models.Model):
     def __str__(self):
         return f"Review for {self.vendor.store_name} by {self.reviewer.username}"
 
-from decimal import Decimal
+
 
 class ContactMessage(models.Model):
     name = models.CharField(max_length=100)
@@ -142,7 +131,7 @@ class ContactMessage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.subject} - {self.name}"  
+        return f"{self.subject} - {self.name}"
 
 from django.contrib import admin
 from .models import ContactMessage
@@ -152,18 +141,18 @@ class ContactMessageAdmin(admin.ModelAdmin):
     list_display = ('subject', 'name', 'email', 'created_at') # Columns you see in the list
     list_filter = ('created_at',) # Filter by date on the right side
     search_fields = ('name', 'subject', 'message') # Search bar for messages
-    readonly_fields = ('created_at',) # Prevents accidental editing of the timestamp             
-    
+    readonly_fields = ('created_at',) # Prevents accidental editing of the timestamp
+
 
 class BusinessApplication(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     business_name = models.CharField(max_length=200)
     business_specialty = models.CharField(max_length=100, help_text="e.g., Fast Food, Electronics")
     physical_location = models.CharField(max_length=255, help_text="Where is your shop located?")
-    
+
     # MERCHANT CODE: Crucial for easy money redirection (MTN/Airtel)
     merchant_code = models.CharField(max_length=50, help_text="Enter your Merchant or Till Number")
-    
+
     application_date = models.DateTimeField(auto_now_add=True)
     is_approved = models.BooleanField(default=False)
 
@@ -177,7 +166,7 @@ class ProductImage(models.Model):
 
     def __str__(self):
         return f"Image for {self.product.title}"
-    
+
 class Message(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
@@ -194,13 +183,13 @@ class Message(models.Model):
     def get_other_user(self, current_user):
         """Returns the person the current user is talking to."""
         return self.receiver if self.sender == current_user else self.sender
-    
+
     @property
     def get_other_user_id(self):
     # If the current message sender is the one viewing it, return the receiver's ID
     # Otherwise, return the sender's ID
         return self.receiver.id # This is a simplified version for the template loop
-    
+
 class Report(models.Model):
     REPORT_CHOICES = [
         ('scam', 'Potential Scam'),
@@ -218,3 +207,84 @@ class Report(models.Model):
 
     def __str__(self):
         return f"Report: {self.reason} on {self.product.title}"
+
+
+
+# ... (Paste this at the very bottom of models.py) ...
+
+class Order(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending Payment'),
+        ('VERIFYING', 'Verifying MoMo ID'),
+        ('IN_ESCROW', 'Money in Escrow (OTP Generated)'),
+        ('COMPLETED', 'Delivered & Paid Out'),
+        ('CANCELLED', 'Cancelled/Refunded'),
+    ]
+
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    # The Manual Payment Bridge
+    momo_transaction_id = models.CharField(max_length=100, blank=True, null=True, help_text="The ID from the MoMo/Airtel SMS")
+
+    # Escrow & Security
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    otp_code = models.CharField(max_length=6, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def generate_otp(self):
+        """Creates a 6-digit code for the student to give the vendor."""
+        if not self.otp_code:
+            self.otp_code = str(random.randint(100000, 999999))
+            self.save()
+
+    def __str__(self):
+        return f"Order #{self.id} - {self.product.title} by {self.buyer.username}"
+
+
+    def save(self, *args, **kwargs):
+        # Detect if this is an update or a fresh creation
+        is_new = self.pk is None
+        old_status = None
+
+        if not is_new:
+            old_status = Order.objects.get(pk=self.pk).status
+
+        """
+        AUTOMATIC ESCROW WATCHDOG:
+        If the order status is shifted to Escrow and doesn't have a token,
+        generate the 6-digit key seamlessly before saving.
+        """
+        if self.status == 'IN_ESCROW' and not self.otp_code:
+                    self.otp_code = str(random.randint(100000, 999999))
+
+        # Call original database commit protocol first
+        super().save(*args, **kwargs)
+
+        # Trigger automation the precise moment status migrates to IN_ESCROW
+        if self.status == 'IN_ESCROW' and (is_new or old_status != 'IN_ESCROW'):
+            # Import inline to stay clear of circular dependency traps
+            from .views import send_escrow_system_message
+            send_escrow_system_message(self)
+
+        def __str__(self):
+                return f"Order #{self.id} - {self.product.title} by {self.buyer.username}"
+
+class PayoutRequest(models.Model):
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending Transfer'),
+        ('PAID', 'Funds Sent Successfully'),
+        ('REJECTED', 'Rejected / Refunded to Wallet'),
+    ]
+
+    vendor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payout_requests')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    momo_number = models.CharField(max_length=15, help_text="The MTN/Airtel number receiving the funds")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    requested_at = models.DateTimeField(auto_now_add=True)
+    processed_at = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.vendor.store_name} - USh {self.amount} ({self.status})"

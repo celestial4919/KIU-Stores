@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width: 850px; margin: 40px auto; padding: 0 20px;">
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <div>
+            <h2 style="color: #001f3f; font-weight: 700; margin: 0; display: flex; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-clock-history"></i> Track Your Transactions
+            </h2>
+            <p style="color: #7f8c8d; font-size: 0.85rem; margin-top: 4px;">Monitor your escrow protection payments and codes</p>
+        </div>
+        <a href="{% url 'home' %}" style="text-decoration: none; color: #27ae60; font-weight: 600; font-size: 0.9rem;">
+            <i class="fa-solid fa-store"></i> Keep Shopping
+        </a>
+    </div>
+
+    {% if orders %}
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            {% for order in orders %}
+                <div style="background: white; border-radius: 16px; border: 1px solid #eee; box-shadow: 0 4px 15px rgba(0,0,0,0.02); overflow: hidden; display: flex; flex-direction: column;">
+
+                    <div style="background: #fdfdfd; padding: 15px 20px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <span style="font-size: 0.8rem; color: #95a5a6; text-transform: uppercase; font-weight: 600;">Ordered on</span>
+                            <strong style="font-size: 0.85rem; color: #34495e; display: block;">{{ order.created_at|date:"d M Y, h:i A" }}</strong>
+                        </div>
+
+                        <div>
+                            {% if order.status == 'PENDING' %}
+
+                            <a href="{% url 'checkout_order' order.id %}" style="text-decoration: none; display: inline-block; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                <span style="background: #f1c40f; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 10px rgba(241,196,15,0.2);">
+                                <i class="fa-solid fa-credit-card"></i> Pay Now <i class="fa-solid fa-arrow-right" style="font-size: 0.65rem;"></i>
+                                </span>
+                            </a>
+                            <form action="{% url 'cancel_order' order.id %}" method="POST" style="margin: 0;">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('Are you sure you want to cancel this order?')" style="background: none; border: 1px solid #e74c3c; color: #e74c3c; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#e74c3c'; this.style.color='white';" onmouseout="this.style.background='none'; this.style.color='#e74c3c';">
+                                    <i class="fa-solid fa-xmark"></i> Cancel
+                                </button>
+                                </form>
+
+
+                            {% elif order.status == 'VERIFYING' %}
+                                <span style="background: #3498db; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;"><i class="fa-solid fa-magnifying-glass"></i> Verifying MoMo ID</span>
+                            {% elif order.status == 'IN_ESCROW' %}
+                                <span style="background: #27ae60; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;"><i class="fa-solid fa-shield-halved"></i> Money In Escrow</span>
+                            {% elif order.status == 'COMPLETED' %}
+                                <span style="background: #001f3f; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;"><i class="fa-solid fa-circle-check"></i> Completed & Released</span>
+                            {% elif order.status == 'CANCELLED' %}
+                                <span style="background: #e74c3c; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;"><i class="fa-solid fa-circle-xmark"></i> Cancelled / Refunded</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div style="padding: 20px; display: flex; gap: 20px; align-items: center; flex-wrap: wrap;">
+                        <img src="{{ order.product.image.url }}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 10px; border: 1px solid #f0f0f0;">
+
+                        <div style="flex-grow: 1; min-width: 200px;">
+                            <h4 style="margin: 0; color: #333; font-size: 1.05rem;">{{ order.product.title }}</h4>
+                            <p style="margin: 4px 0 0 0; font-size: 0.8rem; color: #7f8c8d;">
+                                Seller: <strong style="color: #001f3f;">{{ order.product.vendor.store_name|default:order.product.vendor.username }}</strong>
+                            </p>
+                            {% if order.momo_transaction_id %}
+                                <small style="display: block; margin-top: 5px; color: #bdc3c7; font-family: 'Courier New', monospace;">MoMo Ref: {{ order.momo_transaction_id }}</small>
+                            {% endif %}
+                        </div>
+
+                        <div style="text-align: right; min-width: 120px;">
+                            <span style="font-size: 0.75rem; color: #95a5a6; display: block;">Total Amount</span>
+                            <strong style="font-size: 1.15rem; color: #001f3f;">USh {{ order.total_price }}</strong>
+                            <small style="display: block; color: #7f8c8d; font-size: 0.75rem;">Qty: {{ order.quantity }}</small>
+                        </div>
+                    </div>
+
+                    {% if order.status == 'IN_ESCROW' %}
+                        <div style="margin: 0 20px 20px 20px; background: #f4faf7; border: 1px dashed #27ae60; border-radius: 12px; padding: 15px; display: flex; align-items: center; justify-content: space-between; gap: 15px; flex-wrap: wrap;">
+                            <div style="max-width: 70%;">
+                                <h5 style="margin: 0; color: #27ae60; font-size: 0.9rem; display: flex; align-items: center; gap: 6px;">
+                                    <i class="fa-solid fa-key"></i> Secure Delivery OTP Available
+                                </h5>
+                                <p style="margin: 4px 0 0 0; font-size: 0.75rem; color: #555; line-height: 1.3;">
+                                    Meet the seller physically upon delivery. Verify that the product matches your expectations completely before disclosing this key.
+                                </p>
+                            </div>
+                            <div style="background: #27ae60; color: white; padding: 10px 18px; border-radius: 8px; text-align: center; box-shadow: 0 4px 10px rgba(39,174,96,0.15);">
+                                <small style="display: block; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9;">Share Code</small>
+                                <strong style="font-size: 1.3rem; letter-spacing: 2px; font-family: 'Roboto Mono', monospace;">{{ order.otp_code }}</strong>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 16px; border: 2px dashed #ddd; margin-top: 20px;">
+            <i class="fa-solid fa-receipt fa-3x" style="color: #bdc3c7; margin-bottom: 20px;"></i>
+            <h3 style="color: #7f8c8d; margin: 0 0 8px 0;">No transactions tracked yet</h3>
+            <p style="color: #bdc3c7; margin: 0 0 20px 0; font-size: 0.9rem;">Your submitted purchase records and escrow keys will clear here.</p>
+            <a href="{% url 'home' %}" style="display: inline-block; background: #001f3f; color: white; text-decoration: none; padding: 12px 30px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; transition: background 0.3s;" onmouseover="this.style.background='#27ae60'" onmouseout="this.style.background='#001f3f'">
+                Explore Marketplace
+            </a>
+        </div>
+    {% endif %}
+</div>
+<a href="{% url 'home' %}" style="text-decoration: none; color: #7f8c8d; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; margin-bottom: 20px;">
+    <i class="fa-solid fa-arrow-left"></i> Back to Marketplace
+</a>
+{% endblock %}

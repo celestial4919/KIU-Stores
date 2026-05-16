@@ -10,7 +10,7 @@ urlpatterns = [
     path('signup/', views.signup_view, name='signup'),
     path('search/', views.search_view, name='search'),
     path('profile/', views.profile_view, name='profile'),
-    path('cart/', views.cart_view, name='cart'), 
+    path('cart/', views.cart_view, name='cart'),
     path('cart/add/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
     path('cart/remove/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('become-vendor/', views.become_vendor_landing, name='become_vendor'),
@@ -34,5 +34,14 @@ urlpatterns = [
     path('inbox/', views.inbox, name='inbox'),
     path('inbox/chat/<int:product_id>/<int:other_user_id>/', views.chat_thread, name='chat_thread'),
     path('product/<int:product_id>/report/', views.report_product, name='report_product'),
-]
+    path('checkout/', views.checkout_view, name='checkout'),
+    path('buy-now/<int:product_id>/', views.direct_purchase, name='direct_purchase'),
+    path('checkout/<int:order_id>/', views.checkout_order_view, name='checkout_order'),
+    path('cancel-order/<int:order_id>/', views.cancel_order, name='cancel_order'),
+    path('transactions/', views.track_transactions, name='track_transactions'),
+    path('vendor/verify-otp/<int:order_id>/', views.verify_escrow_otp, name='verify_escrow_otp'),
+    path('vendor/request-payout/', views.request_payout, name='request_payout'),
+    path('dashboard/orders/', views.vendor_orders_view, name='vendor_orders'),
+    path('order/verify-otp/<int:order_id>/', views.verify_escrow_otp, name='verify_escrow_otp'),
 
+]

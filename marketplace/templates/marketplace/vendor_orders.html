@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div style="max-width: 900px; margin: 40px auto; padding: 0 20px; font-family: 'Poppins', sans-serif;">
+
+    <a href="{% url 'vendor_dashboard' %}" style="text-decoration: none; color: #7f8c8d; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; margin-bottom: 25px;">
+        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+    </a>
+
+    <div style="margin-bottom: 35px;">
+        <h2 style="color: #001f3f; margin: 0;"><i class="fa-solid fa-handshake-hook"></i> Escrow Handover Feed</h2>
+        <p style="color: #7f8c8d; margin: 5px 0 0 0;">Verify student delivery codes to safely release your earnings.</p>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div style="padding: 15px 20px; border-radius: 10px; margin-bottom: 25px; font-weight: 500; font-size: 0.95rem;
+                        background: {% if message.tags == 'success' %}#e8f5e9; color: #2e7d32; border-left: 5px solid #2e7d32;{% else %}#fde8e8; color: #9b1c1c; border-left: 5px solid #9b1c1c;{% endif %};">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% if orders %}
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            {% for order in orders %}
+                <div style="background: white; border-radius: 15px; border: 1px solid #eee; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px;">
+
+                    <div style="display: flex; align-items: center; gap: 20px; flex: 1; min-width: 280px;">
+                        <img src="{{ order.product.image.url }}" style="width: 75px; height: 75px; object-fit: cover; border-radius: 10px; border: 1px solid #f0f0f0;">
+                        <div>
+                            <span style="background: #e1f5fe; color: #0288d1; font-size: 0.75rem; padding: 3px 10px; border-radius: 20px; font-weight: 600; display: inline-block; margin-bottom: 6px;">
+                                <i class="fa-solid fa-shield-halved"></i> SECURED IN ESCROW
+                            </span>
+                            <h3 style="color: #001f3f; margin: 0 0 4px 0; font-size: 1.1rem;">{{ order.product.title }}</h3>
+                            <p style="margin: 0; font-size: 0.85rem; color: #7f8c8d;">
+                                Buyer: <strong style="color: #333;">@{{ order.buyer.username }}</strong> &bull; Qty: {{ order.quantity }}
+                            </p>
+                            <p style="margin: 4px 0 0 0; font-size: 0.9rem; color: #27ae60; font-weight: 600;">
+                                Your Payout: UGX {{ order.product.original_price|floatformat:0 }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div style="background: #fdfdfd; border: 1px dashed #cbd5e1; padding: 15px 20px; border-radius: 12px; width: 100%; max-width: 320px;">
+                        <form action="{% url 'verify_escrow_otp' order.id %}" method="POST" style="margin: 0;">
+                            {% csrf_token %}
+                            <label style="display: block; font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 8px;">
+                                Input Buyer Delivery Code
+                            </label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" name="escrow_otp" placeholder="6-Digit OTP" max_length="6" required
+                                       style="flex-grow: 1; padding: 10px 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; text-align: center; font-weight: bold; letter-spacing: 2px; outline: none; font-family: inherit;">
+                                <button type="submit" style="background: #27ae60; color: white; border: none; padding: 0 18px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#219653'" onmouseout="this.style.background='#27ae60'">
+                                    Verify
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 70px 20px; background: white; border-radius: 15px; border: 2px dashed #e2e8f0; margin-top: 10px;">
+            <div style="background: #f8fafc; width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto;">
+                <i class="fa-solid fa-boxes-packing fa-2x" style="color: #94a3b8;"></i>
+            </div>
+            <h3 style="color: #475569; margin: 0 0 8px 0;">All clear right now!</h3>
+            <p style="color: #94a3b8; max-width: 400px; margin: 0 auto; font-size: 0.9rem; line-height: 1.5;">
+                When students purchase your products, their active escrow tickets will instantly appear here for physical handover processing.
+            </p>
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}
