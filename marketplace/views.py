@@ -273,7 +273,7 @@ def vendor_dashboard(request):
         'total_earnings': total_earnings,
         'threshold': threshold,
         'progress': progress,
-        'is_eligible': total_earnings >= threshold
+        'is_eligible': total_earnings >= threshold,
         'default_payout_account': default_payout_account,
         'payouts': payouts,
     }
