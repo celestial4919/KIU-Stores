@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.db import models  # FIXED: Imported models so Case and When work properly
-from .models import User, Product, Category, Order, PayoutRequest  # FIXED: Cleaned up duplicate imports
+from .models import User, Product, Category, Order, PayoutRequest, BusinessApplication  # FIXED: Cleaned up duplicate imports
+# Update this line near the top to add BusinessApplication
+
 
 class CustomUserAdmin(UserAdmin):
     # Add wallet_balance to the columns you see when looking at all users
@@ -75,3 +77,55 @@ class PayoutRequestAdmin(admin.ModelAdmin):
             ),
             '-requested_at'
         )
+
+@admin.register(BusinessApplication)
+class BusinessApplicationAdmin(admin.ModelAdmin):
+    # 1. Columns you will see when looking at all applications
+    list_display = ('business_name', 'user', 'business_specialty', 'physical_location', 'is_approved', 'application_date')
+
+    # 2. Sidebar filters for quick sorting
+    list_filter = ('is_approved', 'application_date')
+
+    # 3. Search parameters
+    search_fields = ('business_name', 'user__username', 'merchant_code', 'business_specialty')
+
+    # 4. INSTANT TOGGLE: Lets you check the approval box straight from the main list view and hit save
+    list_editable = ('is_approved',)
+
+    actions = ['approve_partnership_applications']
+
+    # 5. BULK ACTION: Select multiple boxes and activate them all at once
+    def approve_partnership_applications(self, request, queryset):
+        count = 0
+        for app in queryset.filter(is_approved=False):
+            app.is_approved = True
+            app.save()
+
+            # Smart Automation: Upgrade the linked User account to an official vendor profile instantly
+            user = app.user
+            user.is_vendor = True
+            user.is_official_store = True  # Marks them as an established external partner
+            user.store_name = app.business_name
+            user.business_specialty = app.business_specialty
+            user.location = app.physical_location
+            user.save()
+            count += 1
+
+        self.message_user(
+            request,
+            f"🚀 Successfully approved {count} partnership application(s). Their vendor profiles are now live!"
+        )
+
+    approve_partnership_applications.short_description = "Approve selected partnerships & activate vendor profiles"
+
+    # 6. SINGLE VIEW AUTOMATION: If you click inside an individual application and hit save
+    def save_model(self, request, obj, form, change):
+        if obj.is_approved:
+            user = obj.user
+            user.is_vendor = True
+            user.is_official_store = True
+            user.store_name = obj.business_name
+            user.business_specialty = obj.business_specialty
+            user.location = obj.physical_location
+            user.save()
+        super().save(request, obj, form, change)
