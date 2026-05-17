@@ -81,7 +81,7 @@ class PayoutRequestAdmin(admin.ModelAdmin):
 @admin.register(BusinessApplication)
 class BusinessApplicationAdmin(admin.ModelAdmin):
     # 1. Columns you will see when looking at all applications
-    list_display = ('business_name', 'user', 'business_specialty', 'physical_location', 'is_approved', 'application_date')
+    list_display = ('business_name', 'user', 'business_specialty', 'merchant_code', 'physical_location', 'is_approved', 'application_date')
 
     # 2. Sidebar filters for quick sorting
     list_filter = ('is_approved', 'application_date')

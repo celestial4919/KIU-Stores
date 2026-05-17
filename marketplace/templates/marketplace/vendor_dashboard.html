@@ -30,7 +30,7 @@
                                 <input type="number" name="amount" placeholder="Amount (Max {{ request.user.wallet_balance|floatformat:0 }})"
                                        max="{{ request.user.wallet_balance|floatformat:0 }}" min="10000" required
                                        style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Poppins', sans-serif;">
-                                <input type="text" name="momo_number" placeholder="MoMo Number (e.g. 077...)" required
+                                <input type="text" name="account" value="{{ default_payout_account }}" placeholder="Merchant Code/Phone Number" required
                                        style="padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-family: 'Poppins', sans-serif;">
                                 <button type="submit" style="background: #001f3f; color: white; border: none; padding: 10px; border-radius: 6px; font-weight: 700; cursor: pointer; transition: background 0.3s;" onmouseover="this.style.background='#27ae60'" onmouseout="this.style.background='#001f3f'">
                                     Withdraw Funds
@@ -68,70 +68,59 @@
     </div>
     </div>
 
-        <div style="margin-bottom: 40px;">
-            <h3 style="margin-bottom: 20px; color: #001f3f;"><i class="fa-solid fa-handshake"></i> Active Orders & Handover</h3>
-
-            {% if orders %}
-                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
-                    {% for order in orders %}
-                        <div style="background: white; border-radius: 15px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee;">
-
-                            <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 1px solid #f9f9f9; padding-bottom: 10px; margin-bottom: 15px;">
-                                <div>
-                                    <h4 style="margin: 0; color: #333; font-size: 1rem;">{{ order.product.title }}</h4>
-                                    <p style="margin: 4px 0 0; font-size: 0.8rem; color: #7f8c8d;">Buyer: <strong>{{ order.buyer.username }}</strong></p>
-                                </div>
-                                <span style="font-size: 0.9rem; font-weight: 700; color: #001f3f;">UGX {{ order.total_price }}</span>
-                            </div>
-
-                            <div style="margin-bottom: 15px;">
-                                {% if order.status == 'PENDING' or order.status == 'VERIFYING' %}
-                                    <span style="background: #f1c40f20; color: #f39c12; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">
-                                        <i class="fa-solid fa-hourglass-half"></i> Awaiting Payment Verification
-                                    </span>
-                                {% elif order.status == 'IN_ESCROW' %}
-                                    <span style="background: #27ae6020; color: #27ae60; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">
-                                        <i class="fa-solid fa-shield-halved"></i> Funds Secured in Escrow
-                                    </span>
-                                {% elif order.status == 'COMPLETED' %}
-                                    <span style="background: #001f3f20; color: #001f3f; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">
-                                        <i class="fa-solid fa-check-double"></i> Handover Complete
-                                    </span>
-                                {% endif %}
-                            </div>
-
-                            {% if order.status == 'IN_ESCROW' %}
-                                <div style="background: #fdfaf4; border: 1px dashed #f1c40f; padding: 15px; border-radius: 12px; margin-top: 10px;">
-                                    <p style="margin: 0 0 10px 0; font-size: 0.8rem; color: #7f8c8d; font-weight: 600;">
-                                        Meet buyer and enter their 6-digit key to release funds:
-                                    </p>
-                                    <form action="{% url 'verify_escrow_otp' order.id %}" method="POST" style="display: flex; gap: 8px;">
-                                        {% csrf_token %}
-                                        <input type="text" name="escrow_otp" placeholder="e.g. 123456" required maxlength="6"
-                                               style="flex-grow: 1; padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-family: monospace; font-size: 1.1rem; text-align: center; letter-spacing: 2px;">
-                                        <button type="submit"
-                                                style="background: #27ae60; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 0.85rem; transition: background 0.3s;"
-                                                onmouseover="this.style.background='#219150'" onmouseout="this.style.background='#27ae60'">
-                                            Verify
-                                        </button>
-                                    </form>
-                                </div>
-                            {% elif order.status == 'COMPLETED' %}
-                                <div style="background: #f4faf7; border-left: 4px solid #27ae60; padding: 12px; border-radius: 8px;">
-                                    <p style="margin: 0; color: #2e7d32; font-size: 0.8rem; font-weight: 600;">
-                                        Funds cleared and added to your Celestial Balance.
-                                    </p>
-                                </div>
-                            {% endif %}
-
-                        </div>
-                    {% endfor %}
+    <div style="background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #eee; margin-top: 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h3 style="color: #001f3f; margin: 0; font-size: 1.2rem; font-weight: 700;">
+                        <i class="fa-solid fa-clock-history" style="color: #001f3f; margin-right: 8px;"></i> Payout & Withdrawal History
+                    </h3>
+                    <p style="color: #7f8c8d; margin: 5px 0 0 0; font-size: 0.85rem;">Track your wallet balance cashouts and settlements</p>
                 </div>
-            {% else %}
-                <div style="background: #fdfdfd; border: 1px dashed #ddd; border-radius: 15px; padding: 30px; text-align: center;">
-                    <p style="color: #999; margin: 0; font-size: 0.9rem;">No active orders right now.</p>
-                </div>
-            {% endif %}
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid #f4f6f9; color: #7f8c8d;">
+                            <th style="padding: 12px 10px; font-weight: 600;">Request ID</th>
+                            <th style="padding: 12px 10px; font-weight: 600;">Amount (UGX)</th>
+                            <th style="padding: 12px 10px; font-weight: 600;">Paid To</th>
+                            <th style="padding: 12px 10px; font-weight: 600;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payout in payouts %}
+                            <tr style="border-bottom: 1px solid #f4f6f9; color: #333; transition: background 0.2s;" onmouseover="this.style.background='#fdfdfd'" onmouseout="this.style.background='transparent'">
+                                <td style="padding: 15px 10px; font-weight: 600; color: #7f8c8d;">#PAY-{{ payout.id }}</td>
+                                <td style="padding: 15px 10px; font-weight: 700; color: #001f3f;">UGX {{ payout.amount|floatformat:0 }}</td>
+                                <td style="padding: 15px 10px; font-family: 'Roboto Mono', monospace; color: #555;">{{ payout.momo_number }}</td>
+                                <td style="padding: 15px 10px;">
+                                    {% if payout.status == 'PAID' %}
+                                        <span style="background: #e8f5e9; color: #2e7d32; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block;">
+                                            <i class="fa-solid fa-circle-check"></i> Processed
+                                        </span>
+                                    {% elif payout.status == 'PENDING' %}
+                                        <span style="background: #fff3e0; color: #e65100; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block;">
+                                            <i class="fa-solid fa-spinner fa-spin"></i> Pending Review
+                                        </span>
+                                    {% else %}
+                                        <span style="background: #ffebee; color: #c62828; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-block;">
+                                            <i class="fa-solid fa-circle-xmark"></i> Declined
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 40px; color: #bdc3c7;">
+                                    <i class="fa-solid fa-receipt fa-2x" style="display: block; margin-bottom: 10px; opacity: 0.5;"></i>
+                                    No payout requests made yet.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     <!-- Inventory Table -->

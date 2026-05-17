@@ -250,12 +250,32 @@ def vendor_dashboard(request):
     else:
         progress = 0
 
+    default_payout_account = ""
+
+    if request.user.is_official_store:
+            # Look up their verified enterprise merchant code
+        application = BusinessApplication.objects.filter(user=request.user, is_approved=True).first()
+        if application:
+            default_payout_account = application.merchant_code
+
+        # Fallback for student sellers or stores without an explicit merchant code
+        if not default_payout_account:
+            if getattr(request.user, 'phone_number', None):
+                default_payout_account = request.user.phone_number
+            elif getattr(request.user, 'whatsapp_number', None):
+                default_payout_account = request.user.whatsapp_number
+
+    # === NEW: FETCH VENDOR PAYOUT HISTORY ===
+    payouts = PayoutRequest.objects.filter(vendor=request.user).order_by('-id')
+
     context = {
         'products': products,
         'total_earnings': total_earnings,
         'threshold': threshold,
         'progress': progress,
         'is_eligible': total_earnings >= threshold
+        'default_payout_account': default_payout_account,
+        'payouts': payouts,
     }
 
     return render(request, 'marketplace/vendor_dashboard.html', context)
