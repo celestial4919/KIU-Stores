@@ -128,4 +128,4 @@ class BusinessApplicationAdmin(admin.ModelAdmin):
             user.business_specialty = obj.business_specialty
             user.location = obj.physical_location
             user.save()
-        super().save(request, obj, form, change)
+        super().save_model(request, obj, form, change)
